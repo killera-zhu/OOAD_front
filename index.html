@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>电商平台管理后台</title>
+    <!-- 引入外部 CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div style="display:flex; align-items:center;"><span>电商管理后台</span></div>
+        <nav>
+            <span>👤</span>
+            <a href="#">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a onclick="toggleMenu('merchantMenu')">🛍 管理商户 ▾</a>
+            <div id="merchantMenu" class="submenu">
+                <a href="merchant-list.html">商户列表</a>
+                <a href="merchant-apply.html">商户申请</a>
+            </div>
+
+            <a onclick="toggleMenu('productMenu')">📦 管理商品 ▾</a>
+            <div id="productMenu" class="submenu">
+                <a href="product-list.html">商品列表</a>
+                <a href="product-add.html">添加商品</a>
+            </div>
+
+            <a onclick="toggleMenu('activityMenu')">🎉 管理活动 ▾</a>
+            <div id="activityMenu" class="submenu">
+                <a href="activity-list.html">活动列表</a>
+                <a href="activity-create.html">创建活动</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <h2>欢迎使用电商后台</h2>
+            <p>在这里可以管理商户、商品和活动。</p>
+            <div class="card"><a href="merchant.html">管理商户</a></div>
+            <div class="card"><a href="product.html">管理商品</a></div>
+            <div class="card"><a href="activity.html">管理活动</a></div>
+        </div>
+    </div>
+
+    <!-- 引入外部 JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>
