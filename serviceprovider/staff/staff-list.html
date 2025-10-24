@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>员工管理 - 服务商后台</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div style="display:flex; align-items:center;">
+            <span>🔧 服务商管理后台</span>
+        </div>
+        <nav>
+            <span>👤</span>
+            <a href="../index.html">返回主页</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a onclick="toggleMenu('accountMenu')">账号管理 ▾</a>
+            <div id="accountMenu" class="submenu">
+                <a href="../account-profile.html">个人资料</a>
+                <a href="../account-settings.html">账号设置</a>
+            </div>
+
+            <a onclick="toggleMenu('staffMenu')" class="active">员工管理 ▾</a>
+            <div id="staffMenu" class="submenu" style="display: flex;">
+                <a href="staff-list.html" class="active-link">员工列表</a>
+                <a href="staff-add.html">添加员工</a>
+            </div>
+
+            <a onclick="toggleMenu('serviceMenu')">服务管理 ▾</a>
+            <div id="serviceMenu" class="submenu">
+                <a href="../service-list.html">服务列表</a>
+                <a href="../service-add.html">添加服务</a>
+            </div>
+
+            <a onclick="toggleMenu('orderMenu')">服务单管理 ▾</a>
+            <div id="orderMenu" class="submenu">
+                <a href="../order-list.html">服务单列表</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="main-header">
+                <h2>员工列表</h2>
+                <a href="staff-add.html" class="btn btn-primary">＋ 添加新员工</a>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="按员工姓名或账号搜索...">
+                <select id="statusFilter">
+                    <option value="all">所有状态</option>
+                    <option value="active">正常</option>
+                    <option value="suspended">已暂停</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="staffTable">
+                    <thead>
+                        <tr>
+                            <th>账号</th>
+                            <th>员工姓名</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 员工数据将由 JS 动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

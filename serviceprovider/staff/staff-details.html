@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>员工详细信息 - 服务商后台</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div style="display:flex; align-items:center;">
+            <span>🔧 服务商管理后台</span>
+        </div>
+        <nav>
+            <span>👤</span>
+            <a href="../index.html">返回主页</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a onclick="toggleMenu('accountMenu')">账号管理 ▾</a>
+            <div id="accountMenu" class="submenu">
+                <a href="../account-profile.html">个人资料</a>
+                <a href="../account-settings.html">账号设置</a>
+            </div>
+
+            <a onclick="toggleMenu('staffMenu')" class="active">员工管理 ▾</a>
+            <div id="staffMenu" class="submenu" style="display: flex;">
+                <a href="staff-list.html" class="active-link">员工列表</a>
+                <a href="staff-add.html">添加员工</a>
+            </div>
+
+            <a onclick="toggleMenu('serviceMenu')">服务管理 ▾</a>
+            <div id="serviceMenu" class="submenu">
+                <a href="../service-list.html">服务列表</a>
+                <a href="../service-add.html">添加服务</a>
+            </div>
+
+            <a onclick="toggleMenu('orderMenu')">服务单管理 ▾</a>
+            <div id="orderMenu" class="submenu">
+                <a href="../order-list.html">服务单列表</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <h2>员工详细信息</h2>
+            <div id="detailsContainer" class="details-container">
+                <div class="details-item">
+                    <span class="details-label">员工账号:</span>
+                    <span class="details-value">zhangsan</span>
+                </div>
+                <div class="details-item">
+                    <span class="details-label">员工姓名:</span>
+                    <span class="details-value">张三</span>
+                </div>
+                <div class="details-item">
+                    <span class="details-label">账号描述:</span>
+                    <span class="details-value">金牌维修员</span>
+                </div>
+                <div class="details-item">
+                    <span class="details-label">权限设置:</span>
+                    <span class="details-value">普通员工</span>
+                </div>
+                <div class="details-item">
+                    <span class="details-label">当前状态:</span>
+                    <span class="details-value">正常</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a href="staff-list.html" class="btn btn-secondary">返回列表</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../script.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
