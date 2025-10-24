@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>派工管理 - 服务商后台</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div style="display:flex; align-items:center;">
+            <span>🔧 服务商管理后台</span>
+        </div>
+        <nav>
+            <a href="../index.html">返回主页</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a onclick="toggleMenu('accountMenu')">账号管理 ▾</a>
+            <div id="accountMenu" class="submenu">
+                <a href="../account-profile.html">个人资料</a>
+                <a href="../account-settings.html">账号设置</a>
+            </div>
+
+            <a onclick="toggleMenu('staffMenu')">员工管理 ▾</a>
+            <div id="staffMenu" class="submenu">
+                <a href="../staff/staff-list.html">员工列表</a>
+                <a href="../staff/staff-add.html">添加员工</a>
+            </div>
+
+            <a onclick="toggleMenu('serviceMenu')">服务管理 ▾</a>
+            <div id="serviceMenu" class="submenu">
+                <a href="../service-list.html">服务列表</a>
+                <a href="../service-add.html">添加服务</a>
+            </div>
+
+            <a onclick="toggleMenu('orderMenu')" class="active">服务单管理 ▾</a>
+            <div id="orderMenu" class="submenu" style="display: flex;">
+                <a href="serviceorder-list.html">服务单列表</a>
+                <a href="serviceorder-assign.html" class="active-link">派工管理</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <h2>派工管理</h2>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="按服务单号、客户姓名搜索...">
+                <select id="statusFilter">
+                    <option value="all">所有状态</option>
+                    <option value="accepted">已接收</option>
+                    <option value="assigned">已派工</option>
+                </select>
+                <button class="btn btn-primary" id="searchBtn">查询</button>
+            </div>
+
+            <div class="table-container">
+                <table id="assignTable">
+                    <thead>
+                        <tr>
+                            <th>服务单号</th>
+                            <th>客户姓名</th>
+                            <th>地址</th>
+                            <th>联系方式</th>
+                            <th>服务时间</th>
+                            <th>服务内容</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 待派工服务单数据将由 JS 动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 派工模态框 -->
+            <div id="assignModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>选择维修师傅</h3>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="selectedOrderInfo"></div>
+                        <div class="staff-list">
+                            <h4>可派工的维修师傅：</h4>
+                            <div id="staffList">
+                                <!-- 维修师傅列表将由 JS 动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="confirmAssign">确认派工</button>
+                        <button class="btn btn-secondary" id="cancelAssign">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../script.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

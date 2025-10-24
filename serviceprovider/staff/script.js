@@ -125,8 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('staffTable')) {
         renderStaffList(staffData);
 
-        document.getElementById('searchInput').addEventListener('input', filterAndSearch);
-        document.getElementById('statusFilter').addEventListener('change', filterAndSearch);
+        document.getElementById('searchBtn').addEventListener('click', filterAndSearch);
         
         document.querySelector('#staffTable tbody').addEventListener('click', (e) => {
             const target = e.target;
