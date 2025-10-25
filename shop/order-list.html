@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单列表 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>订单列表</h2>
+            
+            <!-- 订单状态标签页 -->
+            <div class="tabs">
+                <button class="tab-btn active" data-status="unpaid">未支付</button>
+                <button class="tab-btn" data-status="pending">待接受</button>
+                <button class="tab-btn" data-status="shipping">待发货</button>
+                <button class="tab-btn" data-status="completed">已完成</button>
+            </div>
+            
+            <!-- 查询筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>日期：</label>
+                    <input type="date" id="orderDate">
+                </div>
+                <div class="filter-group">
+                    <label>订单号：</label>
+                    <input type="text" id="orderNo" placeholder="请输入订单号">
+                </div>
+                <div class="filter-group">
+                    <label>联系电话：</label>
+                    <input type="text" id="phone" placeholder="请输入联系电话">
+                </div>
+                <button class="btn btn-search" onclick="searchOrders()">查询</button>
+            </div>
+
+            <!-- 订单列表表格 -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>商品信息</th>
+                        <th>支付金额</th>
+                        <th>下单时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ORD20231001001</td>
+                        <td>智能手机A x 1</td>
+                        <td>3999元</td>
+                        <td>2023-10-01 09:30:25</td>
+                        <td><span class="status pending">待接受</span></td>
+                        <td>
+                            <a href="order-detail.html?id=1" class="btn btn-view">详情</a>
+                            <button class="btn btn-accept" onclick="acceptOrder(1)">接受</button>
+                            <button class="btn btn-reject" onclick="rejectOrder(1)">拒绝</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ORD20231001002</td>
+                        <td>笔记本电脑B x 1</td>
+                        <td>5999元</td>
+                        <td>2023-10-01 14:20:10</td>
+                        <td><span class="status shipping">待发货</span></td>
+                        <td>
+                            <a href="order-detail.html?id=2" class="btn btn-view">详情</a>
+                            <button class="btn btn-ship" onclick="shipOrder(2)">发货</button>
+                            <button class="btn btn-cancel" onclick="cancelOrder(2)">取消</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 切换订单状态标签
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // 实际项目中根据状态加载不同订单
+                console.log(`加载状态为 ${this.dataset.status} 的订单`);
+            });
+        });
+
+        // 订单查询功能
+        function searchOrders() {
+            const date = document.getElementById('orderDate').value;
+            const orderNo = document.getElementById('orderNo').value;
+            const phone = document.getElementById('phone').value;
+            console.log(`查询订单: 日期=${date}, 订单号=${orderNo}, 电话=${phone}`);
+        }
+
+        // 接受订单
+        function acceptOrder(id) {
+            if(confirm('确定要接受该订单吗？')) {
+                // 实际项目中调用后端接口
+                alert('订单已接受，将生成运单');
+            }
+        }
+
+        // 拒绝订单
+        function rejectOrder(id) {
+            if(confirm('确定要拒绝该订单吗？将自动为用户退款')) {
+                // 实际项目中调用后端接口
+                alert('订单已拒绝，退款已处理');
+            }
+        }
+
+        // 发货
+        function shipOrder(id) {
+            const waybillNo = prompt('请输入运单号：');
+            if(waybillNo) {
+                // 实际项目中调用后端接口
+                alert(`订单已发货，运单号：${waybillNo}`);
+            }
+        }
+
+        // 取消订单
+        function cancelOrder(id) {
+            if(confirm('确定要取消该订单吗？将为用户办理退款')) {
+                // 实际项目中调用后端接口
+                alert('订单已取消，退款已处理');
+            }
+        }
+    </script>
+    <script>
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'orderMenu\')"]').classList.add('active');
+                toggleMenu('orderMenu');
+            });
+    </script>
+</body>
+</html>

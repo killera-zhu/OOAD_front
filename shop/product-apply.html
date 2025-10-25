@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增商品 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>新增商品</h2>
+            <form id="productForm" class="form-container">
+                <div class="form-group">
+                    <label>商品类型：</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="productType" value="normal" checked> 普通商品</label>
+                        <label><input type="radio" name="productType" value="bundle"> 捆绑商品</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>商品分类：</label>
+                    <select name="category" required>
+                        <option value="">请选择分类</option>
+                        <option value="electronics">电子产品</option>
+                        <option value="clothing">服装</option>
+                        <option value="food">食品</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>商品名称：</label>
+                    <input type="text" name="name" required placeholder="请输入商品名称">
+                </div>
+
+                <div class="form-group">
+                    <label>原价：</label>
+                    <input type="number" name="price" step="0.01" required placeholder="请输入原价">
+                </div>
+
+                <div class="form-group">
+                    <label>单位：</label>
+                    <input type="text" name="unit" required placeholder="如：个、件、台">
+                </div>
+
+                <div class="form-group">
+                    <label>产地：</label>
+                    <input type="text" name="origin" placeholder="请输入产地">
+                </div>
+
+                <div class="form-group">
+                    <label>条码：</label>
+                    <input type="text" name="barcode" placeholder="请输入商品条码">
+                </div>
+
+                <div class="form-group">
+                    <label>分账比例：</label>
+                    <input type="number" name="revenueShare" step="0.01" min="0" max="100" required placeholder="请输入百分比">
+                </div>
+
+                <!-- 捆绑商品特有字段 (默认隐藏) -->
+                <div id="bundleFields" class="bundle-fields">
+                    <div class="form-group">
+                        <label>捆绑商品：</label>
+                        <select name="bundleProducts" multiple>
+                            <option value="1">智能手机A</option>
+                            <option value="2">充电器</option>
+                            <option value="3">耳机</option>
+                        </select>
+                        <small>按住Ctrl键可多选</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>各商品数量：</label>
+                        <input type="text" name="bundleQuantities" placeholder="如：1,2,1 (对应所选商品数量)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>商品间分账比例：</label>
+                        <input type="text" name="bundleShares" placeholder="如：60,20,20 (对应所选商品分账比例)">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit">提交申请</button>
+                    <a href="merchant-list.html" class="btn btn-cancel">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 显示/隐藏捆绑商品字段
+        document.querySelectorAll('input[name="productType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const bundleFields = document.getElementById('bundleFields');
+                bundleFields.style.display = this.value === 'bundle' ? 'block' : 'none';
+            });
+        });
+
+        // 表单提交处理
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 实际项目中会发送表单数据到后端
+            alert('商品申请提交成功！');
+            window.location.href = 'merchant-list.html';
+        });
+    </script>
+    <script>
+        // 加载侧边栏后设置激活状态
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'productMenu\')"]').classList.add('active');
+                toggleMenu('productMenu');
+            });
+    </script>
+</body>
+</html>

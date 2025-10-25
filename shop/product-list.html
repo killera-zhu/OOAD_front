@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品列表 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>商品列表</h2>
+            
+            <!-- 查询筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>商品状态：</label>
+                    <select id="productStatus">
+                        <option value="all">全部</option>
+                        <option value="approved">已核准</option>
+                        <option value="pending">审核中</option>
+                        <option value="rejected">未审核</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>商品名称：</label>
+                    <input type="text" id="productName" placeholder="请输入商品名称">
+                </div>
+                <div class="filter-group">
+                    <label>条码：</label>
+                    <input type="text" id="barcode" placeholder="请输入条码">
+                </div>
+                <button class="btn btn-search" onclick="searchProducts()">查询</button>
+                <a href="merchant-apply.html" class="btn btn-add">新增商品</a>
+            </div>
+
+            <!-- 商品列表表格 -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>分类</th>
+                        <th>原价</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>智能手机A</td>
+                        <td>电子产品</td>
+                        <td>3999元</td>
+                        <td>已核准</td>
+                        <td>
+                            <a href="product-detail.html?id=1" class="btn btn-view">详情</a>
+                            <a href="product-edit.html?id=1" class="btn btn-edit">修改</a>
+                            <a href="product-attribute.html?id=1" class="btn btn-attr">属性修改</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>笔记本电脑B</td>
+                        <td>电子产品</td>
+                        <td>5999元</td>
+                        <td>审核中</td>
+                        <td>
+                            <a href="product-detail.html?id=2" class="btn btn-view">详情</a>
+                            <a href="product-edit.html?id=2" class="btn btn-edit">修改</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 商品查询功能
+        function searchProducts() {
+            const status = document.getElementById('productStatus').value;
+            const name = document.getElementById('productName').value;
+            const barcode = document.getElementById('barcode').value;
+            // 实际项目中会发送请求到后端
+            console.log(`查询商品: 状态=${status}, 名称=${name}, 条码=${barcode}`);
+            // 这里可以添加表格数据刷新逻辑
+        }
+    </script>
+    <script>
+        // 加载侧边栏后设置激活状态
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'productMenu\')"]').classList.add('active');
+                document.querySelector('#productMenu a[href="product-list.html"]').classList.add('active');
+                toggleMenu('productMenu');
+            });
+    </script>
+</body>
+</html>

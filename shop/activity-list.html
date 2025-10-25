@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动列表 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>活动列表</h2>
+            
+            <!-- 查询筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>活动类型：</label>
+                    <select id="activityType">
+                        <option value="all">全部</option>
+                        <option value="promotion">优惠活动</option>
+                        <option value="group">团购活动</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>活动名称：</label>
+                    <input type="text" id="activityName" placeholder="请输入活动名称">
+                </div>
+                <div class="filter-group">
+                    <label>起止时间：</label>
+                    <input type="date" id="startDate">
+                    <span>至</span>
+                    <input type="date" id="endDate">
+                </div>
+                <button class="btn btn-search" onclick="searchActivities()">查询</button>
+                <a href="activity-create.html" class="btn btn-add">新增活动</a>
+            </div>
+
+            <!-- 活动列表表格 -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>活动名称</th>
+                        <th>活动类型</th>
+                        <th>活动规则</th>
+                        <th>起止时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>国庆大促销</td>
+                        <td>优惠活动</td>
+                        <td>全场8折，有效期30天</td>
+                        <td>2023-10-01 至 2023-10-31</td>
+                        <td><span class="status active">进行中</span></td>
+                        <td>
+                            <button class="btn btn-specify" onclick="specifyProducts(1)">指定商品</button>
+                            <button class="btn btn-cancel" onclick="cancelActivity(1)">取消活动</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>手机团购节</td>
+                        <td>团购活动</td>
+                        <td>满10人成团，享受7折优惠</td>
+                        <td>2023-10-15 至 2023-10-25</td>
+                        <td><span class="status pending">待审核</span></td>
+                        <td>
+                            <button class="btn btn-specify" onclick="specifyProducts(2)">指定商品</button>
+                            <button class="btn btn-cancel" onclick="cancelActivity(2)">取消活动</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 活动查询功能
+        function searchActivities() {
+            const type = document.getElementById('activityType').value;
+            const name = document.getElementById('activityName').value;
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            console.log(`查询活动: 类型=${type}, 名称=${name}, 开始=${start}, 结束=${end}`);
+        }
+
+        // 指定参与活动的商品
+        function specifyProducts(id) {
+            // 实际项目中打开弹窗或跳转页面选择商品
+            alert(`打开选择参与活动商品的窗口，活动ID: ${id}`);
+        }
+
+        // 取消活动
+        function cancelActivity(id) {
+            if(confirm('确定要取消该活动吗？')) {
+                // 实际项目中调用后端接口
+                alert('活动已成功取消');
+            }
+        }
+    </script>
+    <script>
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'activityMenu\')"]').classList.add('active');
+                toggleMenu('activityMenu');
+            });
+    </script>
+</body>
+</html>

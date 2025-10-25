@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售列表 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>销售列表</h2>
+            
+            <!-- 查询筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>商品名称：</label>
+                    <input type="text" id="productName" placeholder="请输入商品名称">
+                </div>
+                <div class="filter-group">
+                    <label>销售类型：</label>
+                    <select id="saleType">
+                        <option value="all">全部</option>
+                        <option value="normal">普通</option>
+                        <option value="group">团购</option>
+                        <option value="pre">预售</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>起止时间：</label>
+                    <input type="date" id="startDate">
+                    <span>至</span>
+                    <input type="date" id="endDate">
+                </div>
+                <button class="btn btn-search" onclick="searchSales()">查询</button>
+                <a href="product-create.html" class="btn btn-add">新增销售</a>
+            </div>
+
+            <!-- 销售列表表格 -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>销售类型</th>
+                        <th>价格</th>
+                        <th>销售总数</th>
+                        <th>起止时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>智能手机A</td>
+                        <td>普通销售</td>
+                        <td>3999元</td>
+                        <td>100</td>
+                        <td>2023-10-01 至 2023-12-31</td>
+                        <td>
+                            <button class="btn btn-delist" onclick="delistSale(1)">下架</button>
+                            <button class="btn btn-delete" onclick="deleteSale(1)">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>笔记本电脑B</td>
+                        <td>预售</td>
+                        <td>定金：500元<br>尾款：5499元</td>
+                        <td>50</td>
+                        <td>2023-10-15 至 2023-11-30</td>
+                        <td>
+                            <button class="btn btn-delist" onclick="delistSale(2)">下架</button>
+                            <button class="btn btn-delete" onclick="deleteSale(2)">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 销售查询功能
+        function searchSales() {
+            const name = document.getElementById('productName').value;
+            const type = document.getElementById('saleType').value;
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            console.log(`查询销售: 名称=${name}, 类型=${type}, 开始=${start}, 结束=${end}`);
+        }
+
+        // 下架销售
+        function delistSale(id) {
+            if(confirm('确定要下架该销售吗？\n预售商品将提示是否取消未支付尾款订单')) {
+                // 实际项目中调用后端接口
+                alert('销售已成功下架');
+            }
+        }
+
+        // 删除销售
+        function deleteSale(id) {
+            if(confirm('确定要删除该销售吗？\n如果销售正在进行或有相关订单，将无法删除')) {
+                // 实际项目中调用后端接口
+                // 这里模拟删除成功
+                alert('销售已成功删除');
+                // 刷新页面或移除行
+            }
+        }
+    </script>
+    <script>
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'saleMenu\')"]').classList.add('active');
+                toggleMenu('saleMenu');
+            });
+    </script>
+
+</body>
+</html>

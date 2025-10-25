@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情 - 商户管理后台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>商品详情</h2>
+            <div class="detail-card">
+                <div class="detail-section">
+                    <h3>基本信息</h3>
+                    <table class="detail-table">
+                        <tr>
+                            <th>商品名称：</th>
+                            <td>智能手机A</td>
+                        </tr>
+                        <tr>
+                            <th>商品分类：</th>
+                            <td>电子产品</td>
+                        </tr>
+                        <tr>
+                            <th>原价：</th>
+                            <td>3999元</td>
+                        </tr>
+                        <tr>
+                            <th>单位：</th>
+                            <td>台</td>
+                        </tr>
+                        <tr>
+                            <th>产地：</th>
+                            <td>中国</td>
+                        </tr>
+                        <tr>
+                            <th>条码：</th>
+                            <td>6901234567890</td>
+                        </tr>
+                        <tr>
+                            <th>分账比例：</th>
+                            <td>80%</td>
+                        </tr>
+                        <tr>
+                            <th>状态：</th>
+                            <td><span class="status approved">已核准</span></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="detail-section">
+                    <h3>属性信息</h3>
+                    <table class="detail-table">
+                        <tr>
+                            <th>相关商品：</th>
+                            <td>充电器、耳机</td>
+                        </tr>
+                        <tr>
+                            <th>运费计算方法：</th>
+                            <td>重量计算</td>
+                        </tr>
+                        <tr>
+                            <th>配送物流：</th>
+                            <td>顺丰快递、圆通快递</td>
+                        </tr>
+                        <tr>
+                            <th>重量：</th>
+                            <td>0.5kg</td>
+                        </tr>
+                        <tr>
+                            <th>SKU：</th>
+                            <td>SP-A-64G-黑色、SP-A-128G-白色</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="detail-actions">
+                    <a href="product-edit.html?id=1" class="btn btn-edit">修改商品信息</a>
+                    <a href="product-attribute.html?id=1" class="btn btn-attr">修改属性</a>
+                    <a href="merchant-list.html" class="btn btn-back">返回列表</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 加载侧边栏后设置激活状态
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'productMenu\')"]').classList.add('active');
+                toggleMenu('productMenu');
+            });
+    </script>
+</body>
+</html>
