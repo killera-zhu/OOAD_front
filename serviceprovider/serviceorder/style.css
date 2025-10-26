@@ -94,10 +94,12 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     overflow-x: auto;
+    min-width: 1200px;
 }
 
 #serviceOrderTable, #assignTable {
     width: 100%;
+    min-width: 1200px;
     border-collapse: collapse;
 }
 
@@ -106,6 +108,9 @@
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #serviceOrderTable th, #assignTable th {
@@ -120,12 +125,15 @@
 }
 
 #serviceOrderTable .status, #assignTable .status {
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 12px;
     font-size: 12px;
     font-weight: 500;
     color: white;
     display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 60px;
 }
 
 #serviceOrderTable .status-pending, #assignTable .status-pending {
@@ -321,4 +329,68 @@
 .submenu .active-link {
     color: #fff !important;
     font-weight: 600;
+}
+
+/* --- 派工页面专属样式 --- */
+
+.staff-list-container {
+    margin-top: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 16px;
+}
+
+#staffList .staff-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#staffList .staff-item:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+#staffList .staff-item.selected {
+    border-color: #007bff;
+    background-color: #e7f3ff;
+}
+
+#staffList .staff-details .staff-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+#staffList .staff-details .staff-meta {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+}
+
+#staffList .staff-status-badge {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#staffList .status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+#staffList .status-suspended {
+    background-color: #f8d7da;
+    color: #721c24;
 }
