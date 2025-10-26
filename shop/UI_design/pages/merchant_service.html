@@ -1,543 +1,414 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <title>商户服务管理</title>
-  <!-- 注意：和管理人员页面路径一致（都在 pages/ 目录） -->
-  <link rel="stylesheet" href="../style.css">
-  <style>
-    /* 局部样式（风格与 merchant_staff.html 保持一致） */
-    .toolbar {
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .toolbar .left { display:flex; gap:8px; align-items:center; }
-    .toolbar input, .toolbar select {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    th, td {
-      border-bottom: 1px solid #eee;
-      padding: 10px;
-      text-align: left;
-    }
-    th { background:#f9fafb; }
-    .btn {
-      background-color: #1976d2;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    .btn:hover { background:#1565c0; }
-    .btn-muted { background:#90a4ae; }
-    .btn-danger { background: #d32f2f; }
-    .btn-cancel { background:#ef5350; color:white; }
-    .tab-short { display:inline-block; margin-right:8px; padding:4px 8px; border-radius:6px; background:#eee; }
-    /* modal */
-    .modal {
-      position: fixed; top:0; left:0; right:0; bottom:0;
-      display: none; align-items:center; justify-content:center;
-      background: rgba(0,0,0,0.32);
-      z-index: 9999;
-    }
-    .modal.open { display:flex; }
-    .modal-card {
-      background:#fff; padding:18px; border-radius:10px; width:480px; max-width:92%;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    }
-    .modal-card label { display:block; margin-top:10px; font-size:14px; color:#333; }
-    .modal-card input, .modal-card select, .modal-card textarea {
-      width:100%; padding:8px; margin-top:6px; border:1px solid #ddd; border-radius:6px;
-    }
-    .table-actions button { margin-right:6px; }
-    .status-disabled { color: #9e9e9e; }
-    .pager { margin-top:12px; display:flex; justify-content:flex-end; gap:8px; align-items:center; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务管理 - 商户管理后台</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* 确保弹窗可见 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+        .status.active { color: green; }
+        .status.pending { color: orange; }
+        .status.rejected { color: red; }
+    </style>
 </head>
 <body>
-  <header>
-    <div>商户管理系统</div>
+<header>
+    <div class="header-title">商户管理后台</div>
     <nav>
-      <a href="../index.html">首页</a>
-      <a href="#">帮助</a>
+        <span class="user-icon">👤</span>
+        <a href="#" class="logout-link">退出登录</a>
     </nav>
-  </header>
+</header>
 
-  <div class="container">
-    <aside class="sidebar">
-      <a href="../index.html">返回仪表盘</a>
-      <a href="merchant_staff.html">管理人员</a>
-      <a href="#" class="active">管理服务</a>
-      <a href="merchant_provider.html">管理服务商</a>
-      <a href="merchant_payment.html">管理支付</a>
-      <a href="merchant_after_sales.html">管理售后</a>
-    </aside>
+<div class="container">
+    <div id="sidebar-container"></div>
 
-    <main class="main">
-      <h2>管理服务</h2>
+    <div class="main">
+        <h2>服务管理</h2>
 
-      <!-- 工具栏：查询 + 新增 -->
-      <div class="toolbar">
-        <div class="left">
-          <input id="filterName" placeholder="服务名称">
-          <input id="filterType" placeholder="服务类型">
-          <input id="filterProduct" placeholder="服务商品（名称/编号）">
-          <input id="filterArea" placeholder="服务区域">
-          <select id="filterStatus">
-            <option value="">状态（全部）</option>
-            <option value="启用">启用</option>
-            <option value="禁用">禁用</option>
-            <option value="已取消">已取消</option>
-          </select>
-          <button class="btn" onclick="applyFilter()">查询</button>
-          <button class="btn btn-muted" onclick="resetFilter()">重置</button>
+        <!-- 筛选区域 -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label>服务名称</label>
+                <input type="text" id="filterName" placeholder="输入服务名称">
+            </div>
+            <div class="filter-group">
+                <label>服务类型</label>
+                <input type="text" id="filterType" placeholder="输入服务类型">
+            </div>
+            <div class="filter-group">
+                <label>服务商品</label>
+                <input type="text" id="filterProduct" placeholder="商品名称/编号">
+            </div>
+            <div class="filter-group">
+                <label>服务区域</label>
+                <input type="text" id="filterArea" placeholder="输入服务区域">
+            </div>
+            <div class="filter-group">
+                <label>状态</label>
+                <select id="filterStatus">
+                    <option value="">全部</option>
+                    <option value="启用">启用</option>
+                    <option value="禁用">禁用</option>
+                    <option value="已取消">已取消</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="btn btn-search" onclick="applyFilter()">查询</button>
+                <button class="btn btn-back" onclick="resetFilter()">重置</button>
+            </div>
         </div>
 
-        <div>
-          <button class="btn" onclick="openAddModal()">+ 新增服务</button>
-          <button class="btn btn-muted" onclick="exportServices()">导出</button>
+        <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn btn-add" onclick="openAddModal()">+ 新增服务</button>
+            <button class="btn btn-back" onclick="exportServices()">导出数据</button>
         </div>
-      </div>
 
-      <!-- 服务列表表格（查询结果） -->
-      <table id="serviceTable">
-        <thead>
-          <tr>
-            <th>服务名称</th>
-            <th>服务类型</th>
-            <th>适用商品</th>
-            <th>状态</th>
-            <th>服务地区</th>
-            <th>服务时间</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- 初始示例数据，会由 JS 管理 -->
-        </tbody>
-      </table>
+        <table class="data-table" id="serviceTable">
+            <thead>
+                <tr>
+                    <th>服务名称</th>
+                    <th>服务类型</th>
+                    <th>适用商品</th>
+                    <th>状态</th>
+                    <th>服务地区</th>
+                    <th>服务时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-      <div class="pager" id="pagerArea" aria-hidden="true">
-        <span id="pagerInfo">共 0 条</span>
-        <button class="btn btn-muted" onclick="prevPage()">上一页</button>
-        <button class="btn btn-muted" onclick="nextPage()">下一页</button>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- 新增服务弹窗 -->
-  <div id="addModal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <h3>新增商品服务</h3>
-      <form id="addServiceForm" onsubmit="return handleAddService(event)">
-        <label>服务名称（必填）
-          <input id="add_name" type="text" required>
-        </label>
-        <label>服务类型（必填）
-          <input id="add_type" type="text" required>
-        </label>
-        <label>服务时间（必填，例如 9:00-18:00）
-          <input id="add_time" type="text" required>
-        </label>
-        <label>服务地区（必填）
-          <input id="add_area" type="text" required>
-        </label>
-        <label>适用商品（必填，逗号分隔，至少一个）
-          <input id="add_products" type="text" placeholder="例如：TV-001, 冰箱123" required>
-        </label>
-        <div style="text-align:right;margin-top:12px;">
-          <button class="btn" type="submit">提交新增</button>
-          <button type="button" class="btn btn-danger" onclick="closeAddModal()">取消</button>
+        <div class="pager" id="pagerArea" style="display: none; margin-top: 20px; justify-content: flex-end; gap: 10px;">
+            <span id="pagerInfo">共 0 条</span>
+            <button class="btn btn-back" onclick="prevPage()">上一页</button>
+            <button class="btn btn-back" onclick="nextPage()">下一页</button>
         </div>
-      </form>
     </div>
-  </div>
+</div>
 
-  <!-- 修改服务弹窗 -->
-  <div id="editModal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <h3>修改服务信息</h3>
-      <form id="editServiceForm" onsubmit="return handleEditService(event)">
-        <input id="edit_index" type="hidden">
-        <label>服务名称（必填）
-          <input id="edit_name" type="text" required>
-        </label>
-        <label>服务状态
-          <select id="edit_status">
-            <option>启用</option>
-            <option>禁用</option>
-            <option>已取消</option>
-          </select>
-        </label>
-        <label>服务类型
-          <input id="edit_type" type="text" required>
-        </label>
-        <label>服务时间
-          <input id="edit_time" type="text" required>
-        </label>
-        <label>服务地区
-          <input id="edit_area" type="text" required>
-        </label>
-        <label>适用商品（逗号分隔）
-          <input id="edit_products" type="text" required>
-        </label>
-        <div style="text-align:right;margin-top:12px;">
-          <button class="btn" type="submit">保存</button>
-          <button type="button" class="btn btn-danger" onclick="closeEditModal()">关闭</button>
-        </div>
-      </form>
+<!-- 新增服务弹窗 -->
+<div class="modal-overlay" id="addModal">
+    <div class="modal-content">
+        <h3>新增商品服务</h3>
+        <form id="addServiceForm" class="form-container" onsubmit="return handleAddService(event)">
+            <div class="form-group">
+                <label>服务名称 *</label>
+                <input type="text" id="add_name" required placeholder="请输入服务名称">
+            </div>
+            <div class="form-group">
+                <label>服务类型 *</label>
+                <input type="text" id="add_type" required placeholder="如：安装、维修、清洗">
+            </div>
+            <div class="form-group">
+                <label>服务时间 *</label>
+                <input type="text" id="add_time" required placeholder="如：9:00-18:00">
+            </div>
+            <div class="form-group">
+                <label>服务地区 *</label>
+                <input type="text" id="add_area" required placeholder="如：上海、华东地区">
+            </div>
+            <div class="form-group">
+                <label>适用商品 *</label>
+                <input type="text" id="add_products" required placeholder="多个商品用逗号分隔">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-submit" type="submit">提交新增</button>
+                <button class="btn btn-cancel" type="button" onclick="closeAddModal()">取消</button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 
-  <script src="../script.js"></script>
-  <script>
+<!-- 修改服务弹窗 -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+        <h3>修改服务信息</h3>
+        <form id="editServiceForm" class="form-container" onsubmit="return handleEditService(event)">
+            <input type="hidden" id="edit_index">
+            <div class="form-group">
+                <label>服务名称 *</label>
+                <input type="text" id="edit_name" required>
+            </div>
+            <div class="form-group">
+                <label>服务状态</label>
+                <select id="edit_status">
+                    <option value="启用">启用</option>
+                    <option value="禁用">禁用</option>
+                    <option value="已取消">已取消</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>服务类型 *</label>
+                <input type="text" id="edit_type" required>
+            </div>
+            <div class="form-group">
+                <label>服务时间 *</label>
+                <input type="text" id="edit_time" required>
+            </div>
+            <div class="form-group">
+                <label>服务地区 *</label>
+                <input type="text" id="edit_area" required>
+            </div>
+            <div class="form-group">
+                <label>适用商品 *</label>
+                <input type="text" id="edit_products" required>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-submit" type="submit">保存修改</button>
+                <button class="btn btn-cancel" type="button" onclick="closeEditModal()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
     /*************************************************************************
-     * 模拟数据与工具函数（示例：后端应提供真实接口）
+     * 数据与状态
      *************************************************************************/
-    // 模拟可用商品列表（用于校验 “选择的商品是否存在且可用”）
-    const availableProducts = [
-      'TV-001', 'REF-100', 'AC-200', 'WASH-10', 'TV-002', '冰箱123', '智能音箱88'
-    ];
-
-    // 当前服务数据（每项为对象）
+    const availableProducts = ['TV-001', 'REF-100', 'AC-200', 'WASH-10', 'TV-002', '冰箱123', '智能音箱88'];
     let services = [
-      {
-        name: '上门安装',
-        type: '安装',
-        products: ['TV-001','TV-002'],
-        status: '启用',
-        area: '华东地区',
-        time: '9:00-18:00'
-      },
-      {
-        name: '家电维修',
-        type: '维修',
-        products: ['REF-100', 'WASH-10'],
-        status: '启用',
-        area: '上海',
-        time: '08:00-20:00'
-      }
+        { name: '上门安装', type: '安装', products: ['TV-001','TV-002'], status:'启用', area:'华东地区', time:'9:00-18:00' },
+        { name: '家电维修', type: '维修', products: ['REF-100','WASH-10'], status:'启用', area:'上海', time:'08:00-20:00' },
+        { name: '清洗保养', type: '保养', products: ['AC-200'], status:'禁用', area:'北京', time:'10:00-17:00' }
     ];
-
-    // 分页参数（简单演示）
+    let filteredServices = [...services];
     let page = 1, pageSize = 10;
 
     /*************************************************************************
      * 渲染表格
      *************************************************************************/
     function renderTable() {
-      const tbody = document.querySelector('#serviceTable tbody');
-      tbody.innerHTML = '';
-      const start = (page - 1) * pageSize;
-      const end = start + pageSize;
-      const slice = services.slice(start, end);
+        const tbody = document.querySelector('#serviceTable tbody');
+        tbody.innerHTML = '';
+        const start = (page-1)*pageSize;
+        const slice = filteredServices.slice(start, start+pageSize);
 
-      slice.forEach((s, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(s.name)}</td>
-          <td>${escapeHtml(s.type)}</td>
-          <td>${escapeHtml(s.products.join(', '))}</td>
-          <td class="${s.status==='已取消'?'status-disabled':''}">${escapeHtml(s.status)}</td>
-          <td>${escapeHtml(s.area)}</td>
-          <td>${escapeHtml(s.time)}</td>
-          <td class="table-actions">
-            <button class="btn" onclick="openEditModal(${start + idx})">修改</button>
-            <button class="btn btn-cancel" onclick="cancelService(${start + idx}, this)">取消服务</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+        slice.forEach((s, idx)=>{
+            const realIndex = services.indexOf(s);
+            let statusClass = 'status active';
+            if(s.status==='禁用') statusClass='status pending';
+            if(s.status==='已取消') statusClass='status rejected';
+            const tr = document.createElement('tr');
+            tr.innerHTML=`
+                <td>${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.type)}</td>
+                <td>${escapeHtml(s.products.join(', '))}</td>
+                <td><span class="${statusClass}">${escapeHtml(s.status)}</span></td>
+                <td>${escapeHtml(s.area)}</td>
+                <td>${escapeHtml(s.time)}</td>
+                <td>
+                    <button class="btn btn-edit" onclick="openEditModal(${realIndex})">修改</button>
+                    <button class="btn btn-delete" onclick="cancelService(${realIndex})">取消服务</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
 
-      document.getElementById('pagerInfo').innerText = `共 ${services.length} 条`;
-      document.getElementById('pagerArea').style.display = services.length > pageSize ? 'flex' : 'none';
+        document.getElementById('pagerInfo').innerText = `共 ${filteredServices.length} 条`;
+        document.getElementById('pagerArea').style.display = filteredServices.length>pageSize?'flex':'none';
     }
 
-    function escapeHtml(str) {
-      if (typeof str !== 'string') return str;
-      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    function escapeHtml(str){
+        if(typeof str!=='string') return str;
+        return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
     /*************************************************************************
-     * 过滤 / 查询逻辑（对应用例 MALL-SERVICE-004）
+     * 查询/过滤
      *************************************************************************/
     function applyFilter() {
-      const name = document.getElementById('filterName').value.trim().toLowerCase();
-      const type = document.getElementById('filterType').value.trim().toLowerCase();
-      const product = document.getElementById('filterProduct').value.trim().toLowerCase();
-      const area = document.getElementById('filterArea').value.trim().toLowerCase();
-      const status = document.getElementById('filterStatus').value;
+        const name=document.getElementById('filterName').value.trim().toLowerCase();
+        const type=document.getElementById('filterType').value.trim().toLowerCase();
+        const product=document.getElementById('filterProduct').value.trim().toLowerCase();
+        const area=document.getElementById('filterArea').value.trim().toLowerCase();
+        const status=document.getElementById('filterStatus').value;
 
-      // 过滤原始 services 数据，保留符合条件的
-      const filtered = services.filter(s => {
-        if (name && !s.name.toLowerCase().includes(name)) return false;
-        if (type && !s.type.toLowerCase().includes(type)) return false;
-        if (product && !s.products.join(',').toLowerCase().includes(product)) return false;
-        if (area && !s.area.toLowerCase().includes(area)) return false;
-        if (status && s.status !== status) return false;
-        return true;
-      });
-
-      // 渲染过滤结果（此处简单替换 services 渲染表格，保持分页）
-      // 为避免破坏原始数据，用临时渲染：
-      renderFilteredTable(filtered);
+        filteredServices = services.filter(s=>{
+            if(name&&!s.name.toLowerCase().includes(name)) return false;
+            if(type&&!s.type.toLowerCase().includes(type)) return false;
+            if(product&&!s.products.join(',').toLowerCase().includes(product)) return false;
+            if(area&&!s.area.toLowerCase().includes(area)) return false;
+            if(status&&s.status!==status) return false;
+            return true;
+        });
+        page=1;
+        renderTable();
+        if(filteredServices.length===0) alert('未找到符合条件的服务');
     }
 
-    function renderFilteredTable(list) {
-      const tbody = document.querySelector('#serviceTable tbody');
-      tbody.innerHTML = '';
-      list.forEach((s, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(s.name)}</td>
-          <td>${escapeHtml(s.type)}</td>
-          <td>${escapeHtml(s.products.join(', '))}</td>
-          <td class="${s.status==='已取消'?'status-disabled':''}">${escapeHtml(s.status)}</td>
-          <td>${escapeHtml(s.area)}</td>
-          <td>${escapeHtml(s.time)}</td>
-          <td class="table-actions">
-            <button class="btn" onclick="openEditModalFiltered(${idx})">修改</button>
-            <button class="btn btn-cancel" onclick="cancelServiceFiltered(${idx}, this)">取消服务</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-      document.getElementById('pagerInfo').innerText = `共 ${list.length} 条（查询结果）`;
-      document.getElementById('pagerArea').style.display = 'none';
-    }
-
-    function resetFilter() {
-      document.getElementById('filterName').value = '';
-      document.getElementById('filterType').value = '';
-      document.getElementById('filterProduct').value = '';
-      document.getElementById('filterArea').value = '';
-      document.getElementById('filterStatus').value = '';
-      renderTable();
+    function resetFilter(){
+        document.getElementById('filterName').value='';
+        document.getElementById('filterType').value='';
+        document.getElementById('filterProduct').value='';
+        document.getElementById('filterArea').value='';
+        document.getElementById('filterStatus').value='';
+        filteredServices=[...services];
+        page=1;
+        renderTable();
     }
 
     /*************************************************************************
-     * 新增服务（对应用例 MALL-SERVICE-001）
-     * - 验证必填
-     * - 验证至少选择一个适用商品
-     * - 验证选择的商品是否存在且可用（模拟）
+     * 新增服务
      *************************************************************************/
     function openAddModal() {
-      document.getElementById('addModal').classList.add('open');
-      document.getElementById('addModal').setAttribute('aria-hidden','false');
+        document.getElementById('addModal').style.display='flex';
+        document.getElementById('addServiceForm').reset();
     }
     function closeAddModal() {
-      document.getElementById('addModal').classList.remove('open');
-      document.getElementById('addModal').setAttribute('aria-hidden','true');
-      document.getElementById('addServiceForm').reset();
+        document.getElementById('addModal').style.display='none';
+        document.getElementById('addServiceForm').reset();
     }
+    function handleAddService(e){
+        e.preventDefault();
+        const name=document.getElementById('add_name').value.trim();
+        const type=document.getElementById('add_type').value.trim();
+        const timeVal=document.getElementById('add_time').value.trim();
+        const area=document.getElementById('add_area').value.trim();
+        const productsRaw=document.getElementById('add_products').value.trim();
 
-    function handleAddService(e) {
-      e.preventDefault();
-      const name = document.getElementById('add_name').value.trim();
-      const type = document.getElementById('add_type').value.trim();
-      const timeVal = document.getElementById('add_time').value.trim();
-      const area = document.getElementById('add_area').value.trim();
-      const productsRaw = document.getElementById('add_products').value.trim();
+        if(!name||!type||!timeVal||!area||!productsRaw){ alert('请填写所有必填字段'); return false; }
 
-      if (!name || !type || !timeVal || !area || !productsRaw) {
-        alert('请填写所有必填字段（服务名称/类型/时间/地区/适用商品）。');
+        const products = productsRaw.split(',').map(s=>s.trim()).filter(Boolean);
+        if(products.length===0){ alert('必须选择至少一个适用的商品'); return false; }
+
+        const missing = products.filter(p=>!availableProducts.includes(p));
+        if(missing.length>0){ alert('以下商品不存在或不可用：'+missing.join(', ')); return false; }
+
+        services.unshift({name,type,time:timeVal,area,products,status:'启用'});
+        closeAddModal();
+        filteredServices=[...services];
+        renderTable();
+        alert('服务已成功新增！');
         return false;
-      }
-
-      const products = productsRaw.split(',').map(s => s.trim()).filter(Boolean);
-      if (products.length === 0) {
-        alert('必须选择至少一个适用的商品。');
-        return false;
-      }
-
-      // 验证所选商品是否存在且可用（模拟）
-      const missing = products.filter(p => !availableProducts.includes(p));
-      if (missing.length > 0) {
-        alert('以下商品不存在或不可用：' + missing.join(', ') + '。请重新选择。');
-        return false;
-      }
-
-      // 保存（模拟后端保存）
-      services.unshift({
-        name, type, time: timeVal, area, products, status: '启用'
-      });
-
-      closeAddModal();
-      renderTable();
-      alert('服务已成功新增，可立即用于创建服务合同。');
-      return false;
     }
 
     /*************************************************************************
-     * 修改服务（对应用例 MALL-SERVICE-002） - 弹窗编辑
+     * 修改服务
      *************************************************************************/
-    function openEditModal(index) {
-      // index 是 services 中的下标（在渲染时传的实际下标）
-      const s = services[index];
-      if (!s) { alert('未找到服务'); return; }
-      document.getElementById('edit_index').value = index;
-      document.getElementById('edit_name').value = s.name;
-      document.getElementById('edit_status').value = s.status;
-      document.getElementById('edit_type').value = s.type;
-      document.getElementById('edit_time').value = s.time;
-      document.getElementById('edit_area').value = s.area;
-      document.getElementById('edit_products').value = s.products.join(', ');
-      document.getElementById('editModal').classList.add('open');
-      document.getElementById('editModal').setAttribute('aria-hidden','false');
+    function openEditModal(index){
+        const s=services[index];
+        if(!s){ alert('未找到服务'); return; }
+        document.getElementById('edit_index').value=index;
+        document.getElementById('edit_name').value=s.name;
+        document.getElementById('edit_status').value=s.status;
+        document.getElementById('edit_type').value=s.type;
+        document.getElementById('edit_time').value=s.time;
+        document.getElementById('edit_area').value=s.area;
+        document.getElementById('edit_products').value=s.products.join(', ');
+        document.getElementById('editModal').style.display='flex';
     }
+    function closeEditModal(){ document.getElementById('editModal').style.display='none'; }
+    function handleEditService(e){
+        e.preventDefault();
+        const idx=parseInt(document.getElementById('edit_index').value,10);
+        const name=document.getElementById('edit_name').value.trim();
+        const status=document.getElementById('edit_status').value;
+        const type=document.getElementById('edit_type').value.trim();
+        const timeVal=document.getElementById('edit_time').value.trim();
+        const area=document.getElementById('edit_area').value.trim();
+        const productsRaw=document.getElementById('edit_products').value.trim();
 
-    // 兼容 filtered 渲染的修改（仅示例：弹窗中不支持直接保存到过滤列表中的项）
-    function openEditModalFiltered(filteredIdx) {
-      // 如果当前页面是过滤结果，需要把 filteredIdx 映射回 services 中的实际下标
-      // 最简单做法是重新执行过滤并计算实际下标——这里我们执行和 applyFilter 一致的过滤
-      const name = document.getElementById('filterName').value.trim().toLowerCase();
-      const type = document.getElementById('filterType').value.trim().toLowerCase();
-      const product = document.getElementById('filterProduct').value.trim().toLowerCase();
-      const area = document.getElementById('filterArea').value.trim().toLowerCase();
-      const status = document.getElementById('filterStatus').value;
+        if(!name||!type||!timeVal||!area||!productsRaw){ alert('请填写所有必填字段'); return false; }
+        const products = productsRaw.split(',').map(s=>s.trim()).filter(Boolean);
+        const missing = products.filter(p=>!availableProducts.includes(p));
+        if(missing.length>0){ alert('以下商品不存在或不可用：'+missing.join(', ')); return false; }
 
-      const filtered = services.filter(s => {
-        if (name && !s.name.toLowerCase().includes(name)) return false;
-        if (type && !s.type.toLowerCase().includes(type)) return false;
-        if (product && !s.products.join(',').toLowerCase().includes(product)) return false;
-        if (area && !s.area.toLowerCase().includes(area)) return false;
-        if (status && s.status !== status) return false;
-        return true;
-      });
-      const real = filtered[filteredIdx];
-      const realIndex = services.indexOf(real);
-      if (realIndex === -1) { alert('映射失败'); return; }
-      openEditModal(realIndex);
-    }
-
-    function handleEditService(e) {
-      e.preventDefault();
-      const idx = parseInt(document.getElementById('edit_index').value, 10);
-      const name = document.getElementById('edit_name').value.trim();
-      const status = document.getElementById('edit_status').value;
-      const type = document.getElementById('edit_type').value.trim();
-      const timeVal = document.getElementById('edit_time').value.trim();
-      const area = document.getElementById('edit_area').value.trim();
-      const productsRaw = document.getElementById('edit_products').value.trim();
-      if (!name || !type || !timeVal || !area || !productsRaw) {
-        alert('请填写所有必填字段。');
+        services[idx]={name,type,time:timeVal,area,products,status};
+        closeEditModal();
+        filteredServices=[...services];
+        renderTable();
+        alert('服务信息已保存');
         return false;
-      }
-      const products = productsRaw.split(',').map(s => s.trim()).filter(Boolean);
-      if (products.length === 0) { alert('请至少填写一个适用商品。'); return false; }
-      // 验证商品是否存在（模拟）
-      const missing = products.filter(p => !availableProducts.includes(p));
-      if (missing.length > 0) {
-        alert('以下商品不存在或不可用：' + missing.join(', '));
-        return false;
-      }
-
-      // 保存修改
-      services[idx] = { name, type, products, status, area, time: timeVal };
-      closeEditModal();
-      renderTable();
-      alert('服务信息已保存。');
-      return false;
-    }
-
-    function closeEditModal() {
-      document.getElementById('editModal').classList.remove('open');
-      document.getElementById('editModal').setAttribute('aria-hidden','true');
     }
 
     /*************************************************************************
-     * 取消服务（对应新增的 MALL-SERVICE-003 子用例）
+     * 取消服务
      *************************************************************************/
-    function cancelService(index, btnEl) {
-      const s = services[index];
-      if (!s) return alert('未找到服务');
-      if (s.status === '已取消') return alert('该服务已是已取消状态。');
-
-      if (!confirm(`确认要取消服务「${s.name}」吗？取消后该服务对适用商品失效。`)) return;
-
-      s.status = '已取消';
-      renderTable();
-      alert('服务已取消。');
-    }
-
-    // 取消服务（filtered 渲染版）
-    function cancelServiceFiltered(filteredIdx, btnEl) {
-      // 同 openEditModalFiltered，用过滤结果找到真实索引
-      const name = document.getElementById('filterName').value.trim().toLowerCase();
-      const type = document.getElementById('filterType').value.trim().toLowerCase();
-      const product = document.getElementById('filterProduct').value.trim().toLowerCase();
-      const area = document.getElementById('filterArea').value.trim().toLowerCase();
-      const status = document.getElementById('filterStatus').value;
-
-      const filtered = services.filter(s => {
-        if (name && !s.name.toLowerCase().includes(name)) return false;
-        if (type && !s.type.toLowerCase().includes(type)) return false;
-        if (product && !s.products.join(',').toLowerCase().includes(product)) return false;
-        if (area && !s.area.toLowerCase().includes(area)) return false;
-        if (status && s.status !== status) return false;
-        return true;
-      });
-      const real = filtered[filteredIdx];
-      const realIndex = services.indexOf(real);
-      if (realIndex === -1) { alert('映射失败'); return; }
-      cancelService(realIndex, btnEl);
+    function cancelService(index){
+        const s=services[index];
+        if(!s){ alert('未找到服务'); return; }
+        if(s.status==='已取消'){ alert('该服务已是已取消状态'); return; }
+        if(!confirm(`确认要取消服务「${s.name}」吗？`)) return;
+        s.status='已取消';
+        filteredServices=[...services];
+        renderTable();
+        alert('服务已取消');
     }
 
     /*************************************************************************
-     * 导出 / 分页（简单演示占位）
+     * 导出
      *************************************************************************/
-    function exportServices() {
-      // 示例：导出当前 services 简单 CSV（客户端生成）
-      if (services.length === 0) { alert('无数据可导出'); return; }
-      const rows = [['服务名称','服务类型','适用商品','状态','地区','时间']];
-      services.forEach(s => rows.push([s.name, s.type, s.products.join(';'), s.status, s.area, s.time]));
-      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'services_export.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function prevPage() {
-      if (page > 1) { page--; renderTable(); }
-    }
-    function nextPage() {
-      const max = Math.ceil(services.length / pageSize);
-      if (page < max) { page++; renderTable(); }
+    function exportServices(){
+        if(services.length===0){ alert('无数据可导出'); return; }
+        const rows=[['服务名称','服务类型','适用商品','状态','地区','时间']];
+        services.forEach(s=>rows.push([s.name,s.type,s.products.join(';'),s.status,s.area,s.time]));
+        const csv=rows.map(r=>r.map(v=>`"${v.replace(/"/g,'""')}"`).join(',')).join('\n');
+        const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download='services_export_'+Date.now()+'.csv';
+        document.body.appendChild(a);
+        a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        alert('导出成功！');
     }
 
     /*************************************************************************
-     * 初始化渲染
+     * 分页
      *************************************************************************/
-    document.addEventListener('DOMContentLoaded', () => {
-      renderTable();
+    function prevPage(){ if(page>1){ page--; renderTable(); } }
+    function nextPage(){ const max=Math.ceil(filteredServices.length/pageSize); if(page<max){ page++; renderTable(); } }
 
-      // 绑定关闭点击遮罩使弹窗关闭（点击弹窗外）
-      document.getElementById('addModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('addModal')) closeAddModal();
-      });
-      document.getElementById('editModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('editModal')) closeEditModal();
-      });
+    /*************************************************************************
+     * 初始化
+     *************************************************************************/
+    document.addEventListener('DOMContentLoaded',()=>{
+        renderTable();
+
+        document.getElementById('addModal').addEventListener('click',(e)=>{
+            if(e.target===document.getElementById('addModal')) closeAddModal();
+        });
+        document.getElementById('editModal').addEventListener('click',(e)=>{
+            if(e.target===document.getElementById('editModal')) closeEditModal();
+        });
     });
-  </script>
+</script>
+<script src="../script.js"></script>
+<script>
+    // 动态加载侧边栏，与活动列表页保持一致
+    fetch('../sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('sidebar-container').innerHTML = data;
+
+            // 激活当前菜单项（假设服务管理的菜单id是 serviceMenu）
+            const menuLink = document.querySelector('a[onclick="toggleMenu(\'serviceMenu\')"]');
+            if (menuLink) {
+                menuLink.classList.add('active');
+                toggleMenu('serviceMenu');
+            }
+        })
+        .catch(err => console.error('加载侧边栏失败:', err));
+</script>
+
 </body>
 </html>

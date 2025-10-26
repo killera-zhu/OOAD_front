@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>销售列表 - 商户管理后台</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <header>
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
     <script>
         // 销售查询功能
         function searchSales() {
@@ -117,7 +117,7 @@
         }
     </script>
     <script>
-        fetch('sidebar.html')
+        fetch('../sidebar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('sidebar-container').innerHTML = data;

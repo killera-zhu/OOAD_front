@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务合同管理 - 商户管理后台</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>服务合同管理</h2>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <input type="text" id="searchContract" placeholder="输入服务商名称 / 服务名称 / 地区">
+                    <button class="btn btn-search" onclick="queryContract()">查询合同</button>
+                    <button class="btn btn-add" onclick="openContractModal('new')">+ 新建合同</button>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>合同编号</th>
+                        <th>服务商名称</th>
+                        <th>服务名称</th>
+                        <th>服务地区</th>
+                        <th>服务期限</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CT2025001</td>
+                        <td>优品服务有限公司</td>
+                        <td>家电维修</td>
+                        <td>上海</td>
+                        <td>2025-01-01 至 2025-12-31</td>
+                        <td><span class="status active">生效中</span></td>
+                        <td>
+                            <button class="btn btn-delist" onclick="pauseContract(this)">暂停</button>
+                            <button class="btn btn-delete" onclick="cancelContract(this)">取消</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CT2025002</td>
+                        <td>智诚科技服务</td>
+                        <td>电子安装</td>
+                        <td>广州</td>
+                        <td>2025-03-01 至 2026-03-01</td>
+                        <td><span class="status pending">暂停</span></td>
+                        <td>
+                            <button class="btn btn-accept" onclick="resumeContract(this)">恢复</button>
+                            <button class="btn btn-delete" onclick="cancelContract(this)">取消</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 新建/编辑合同弹窗 -->
+    <div class="modal-overlay" id="contractModal" style="display:none;">
+        <div class="modal-content">
+            <h3 id="contractModalTitle">新建服务合同</h3>
+            <div class="form-container">
+                <div class="form-group"><label>服务商名称：</label><input type="text" id="contractProvider" placeholder="请输入或选择服务商"></div>
+                <div class="form-group"><label>服务名称：</label><input type="text" id="contractService" placeholder="请输入服务名称"></div>
+                <div class="form-group"><label>服务地区：</label><input type="text" id="contractArea" placeholder="请输入服务地区"></div>
+                <div class="form-group"><label>服务期限：</label><input type="text" id="contractDuration" placeholder="如：2025-01-01 至 2025-12-31"></div>
+                <div class="form-group"><label>合同条款：</label><textarea id="contractTerms" rows="5" placeholder="请输入合同条款详情"></textarea></div>
+                <div class="form-actions">
+                    <button class="btn btn-submit" onclick="saveContract()">保存合同</button>
+                    <button class="btn btn-cancel" onclick="closeModal('contractModal')">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../script.js"></script>
+    <script>
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+            });
+
+        function queryContract() {
+            const keyword = document.getElementById('searchContract').value.trim();
+            if (!keyword) return alert('请输入查询条件');
+            alert('模拟查询合同: ' + keyword);
+        }
+
+        function openContractModal(type) {
+            document.getElementById('contractModal').style.display = 'flex';
+            document.getElementById('contractModalTitle').textContent = type === 'new' ? '新建服务合同' : '修改服务合同';
+            document.querySelectorAll('#contractModal input, #contractModal textarea').forEach(el => el.value = '');
+        }
+
+        function saveContract() {
+            const provider = document.getElementById('contractProvider').value;
+            if (!provider) return alert('请填写必填信息');
+            alert('合同保存成功！');
+            closeModal('contractModal');
+        }
+
+        function pauseContract(btn) {
+            if (!confirm('确定要暂停该合同吗？')) return;
+            const row = btn.closest('tr');
+            row.querySelector('.status').textContent = '暂停';
+            row.querySelector('.status').className = 'status pending';
+            btn.outerHTML = '<button class="btn btn-accept" onclick="resumeContract(this)">恢复</button>';
+        }
+
+        function resumeContract(btn) {
+            if (!confirm('确定要恢复该合同吗？')) return;
+            const row = btn.closest('tr');
+            row.querySelector('.status').textContent = '生效中';
+            row.querySelector('.status').className = 'status active';
+            btn.outerHTML = '<button class="btn btn-delist" onclick="pauseContract(this)">暂停</button>';
+        }
+
+        function cancelContract(btn) {
+            if (!confirm('确定要取消该合同吗？')) return;
+            btn.closest('tr').remove();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

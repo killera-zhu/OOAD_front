@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>售后查询 - 商户管理后台</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header>
+    <div class="header-title">商户管理后台</div>
+    <nav>
+      <span class="user-icon">👤</span>
+      <a href="#" class="logout-link">退出登录</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="sidebar-container"></div>
+
+    <div class="main">
+      <h2>售后查询</h2>
+
+      <div class="filter-section">
+        <div class="filter-group">
+          <input type="text" id="searchAftersales" placeholder="输入手机号 / 订单号 / 售后单号 / 商品 / 状态 / 地区">
+          <button class="btn btn-search" onclick="queryAftersales()">查询</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>售后单号</th>
+            <th>商品</th>
+            <th>时间</th>
+            <th>顾客</th>
+            <th>地区</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AS2025001</td>
+            <td>智能手机</td>
+            <td>2025-10-20</td>
+            <td>张三</td>
+            <td>上海</td>
+            <td><span class="status pending">待审核</span></td>
+            <td>
+              <button class="btn btn-view" onclick="openReviewModal('AS2025001')">审核</button>
+              <button class="btn btn-delete" onclick="cancelAfterSales(this)">取消</button>
+            </td>
+          </tr>
+          <tr>
+            <td>AS2025002</td>
+            <td>笔记本电脑</td>
+            <td>2025-10-22</td>
+            <td>李四</td>
+            <td>广州</td>
+            <td><span class="status approved">已审核</span></td>
+            <td>
+              <button class="btn btn-view" onclick="openReviewModal('AS2025002')">审核</button>
+              <button class="btn btn-delete" onclick="cancelAfterSales(this)">取消</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 审核弹窗 -->
+  <div class="modal-overlay" id="reviewModal" style="display:none;">
+    <div class="modal-content">
+      <h3>审核售后申请</h3>
+      <div class="form-group">
+        <label>售后单号：</label>
+        <input type="text" id="reviewId" readonly>
+      </div>
+      <div class="form-group">
+        <label>审核结果：</label>
+        <select id="reviewResult">
+          <option value="agree">同意</option>
+          <option value="disagree">不同意</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>审核说明：</label>
+        <textarea id="reviewNote" rows="4"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-submit" onclick="submitReview()">提交</button>
+        <button class="btn btn-cancel" onclick="closeModal('reviewModal')">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../script.js"></script>
+  <script>
+    fetch('../sidebar.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        const menu = document.querySelector('a[onclick*="afterSalesMenu"]');
+        if (menu) {
+          menu.classList.add('active');
+          toggleMenu('afterSalesMenu');
+        }
+      });
+
+    function openReviewModal(asId) {
+      document.getElementById('reviewModal').style.display = 'flex';
+      document.getElementById('reviewId').value = asId;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function submitReview() {
+      const result = document.getElementById('reviewResult').value;
+      const note = document.getElementById('reviewNote').value;
+      alert(`审核提交成功\n结果: ${result === 'agree' ? '同意' : '不同意'}\n说明: ${note}`);
+      closeModal('reviewModal');
+    }
+
+    function cancelAfterSales(btn) {
+      if (confirm('确定要取消该售后吗？')) {
+        btn.closest('tr').remove();
+        alert('售后已取消');
+      }
+    }
+
+    function queryAftersales() {
+      const keyword = document.getElementById('searchAftersales').value;
+      alert('模拟查询售后: ' + keyword);
+    }
+  </script>
+</body>
+</html>

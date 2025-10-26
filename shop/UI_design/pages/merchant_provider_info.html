@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务商信息 - 商户管理后台</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>服务商信息</h2>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <input type="text" id="searchProvider" placeholder="输入服务商名称 / 商品类型 / 地区">
+                    <button class="btn btn-search" onclick="queryProvider()">查询</button>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>服务商名称</th>
+                        <th>服务商品类型</th>
+                        <th>服务地区</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>优品服务有限公司</td>
+                        <td>电子产品维修</td>
+                        <td>上海</td>
+                        <td><button class="btn btn-view" onclick="viewProviderDetail('优品服务有限公司', '电子产品维修', '上海')">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>智诚科技服务</td>
+                        <td>家电安装</td>
+                        <td>广州</td>
+                        <td><button class="btn btn-view" onclick="viewProviderDetail('智诚科技服务', '家电安装', '广州')">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td>安心维护服务中心</td>
+                        <td>综合维修</td>
+                        <td>北京</td>
+                        <td><button class="btn btn-view" onclick="viewProviderDetail('安心维护服务中心', '综合维修', '北京')">查看详情</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 服务商详情弹窗 -->
+    <div class="modal-overlay" id="providerModal" style="display:none;">
+        <div class="modal-content">
+            <h3>服务商详情</h3>
+            <div class="detail-card">
+                <table class="detail-table">
+                    <tr><th>服务商名称：</th><td id="provName"></td></tr>
+                    <tr><th>服务商品类型：</th><td id="provType"></td></tr>
+                    <tr><th>服务地区：</th><td id="provArea"></td></tr>
+                    <tr><th>联系人：</th><td id="provContact"></td></tr>
+                    <tr><th>联系电话：</th><td id="provPhone"></td></tr>
+                    <tr><th>联系地址：</th><td id="provAddress"></td></tr>
+                    <tr><th>服务资质证明：</th><td id="provCert"><span class="status approved">已上传</span></td></tr>
+                    <tr><th>服务商简介：</th><td id="provDesc"></td></tr>
+                </table>
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-back" onclick="closeModal('providerModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../script.js"></script>
+    <script>
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+            });
+
+        function queryProvider() {
+            const keyword = document.getElementById('searchProvider').value.trim();
+            if (!keyword) return alert('请输入查询条件');
+            alert('模拟查询服务商: ' + keyword);
+        }
+
+        function viewProviderDetail(name, type, area) {
+            const providerData = {
+                '优品服务有限公司': { contact: '王经理', phone: '13800001111', address: '上海市浦东新区张江路88号', desc: '专注售后维修十年，服务覆盖全国多个城市。' },
+                '智诚科技服务': { contact: '李主管', phone: '13900002222', address: '广州市天河区体育西路123号', desc: '提供专业的家电安装与维护服务，团队经验丰富。' },
+                '安心维护服务中心': { contact: '张总', phone: '13700003333', address: '北京市朝阳区建国路99号', desc: '综合性售后服务提供商，覆盖多个品类。' }
+            };
+            const data = providerData[name];
+            document.getElementById('provName').textContent = name;
+            document.getElementById('provType').textContent = type;
+            document.getElementById('provArea').textContent = area;
+            document.getElementById('provContact').textContent = data.contact;
+            document.getElementById('provPhone').textContent = data.phone;
+            document.getElementById('provAddress').textContent = data.address;
+            document.getElementById('provDesc').textContent = data.desc;
+            document.getElementById('providerModal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新增商品 - 商户管理后台</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <header>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
     <script>
         // 显示/隐藏捆绑商品字段
         document.querySelectorAll('input[name="productType"]').forEach(radio => {
@@ -121,7 +121,7 @@
     </script>
     <script>
         // 加载侧边栏后设置激活状态
-        fetch('sidebar.html')
+        fetch('../sidebar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('sidebar-container').innerHTML = data;

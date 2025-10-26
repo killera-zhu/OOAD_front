@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>账号设置 - 商户管理后台</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <header>
@@ -20,16 +20,11 @@
         <div id="sidebar-container"></div>
 
         <div class="main">
-            <h2>账号设置</h2>
-            
-            <div class="form-tabs">
-                <button class="form-tab-btn active" data-tab="account">账号信息</button>
-                <button class="form-tab-btn" data-tab="attributes">账户属性</button>
-                <button class="form-tab-btn" data-tab="cancellation">账号注销</button>
-            </div>
+            <h2>创建账户</h2>
 
             <!-- 账号信息设置 -->
             <div class="form-panel active" id="accountPanel">
+                <h3>账号信息</h3>
                 <form id="accountForm" class="form-container">
                     <div class="form-group">
                         <label>商户名称：</label>
@@ -45,15 +40,9 @@
                         <label>商户员工上限：</label>
                         <input type="number" name="staffLimit" value="10" min="1" required>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-submit">提交修改</button>
-                    </div>
                 </form>
             </div>
-
-            <!-- 账户属性设置 -->
-            <div class="form-panel" id="attributesPanel">
+                <h3>账号属性</h3>
                 <form id="attributesForm" class="form-container">
                     <div class="form-group">
                         <label>联系人姓名：</label>
@@ -76,27 +65,15 @@
                         <span>元</span>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-submit">提交修改</button>
-                    </div>
                 </form>
-            </div>
-
-            <!-- 账号注销 -->
-            <div class="form-panel" id="cancellationPanel">
-                <div class="warning-box">
-                    <h3>账号注销须知</h3>
-                    <p>1. 注销账号前请确保所有订单分账已完成</p>
-                    <p>2. 账号注销后，所有商品、活动等信息将被清除</p>
-                    <p>3. 注销操作不可逆，请谨慎操作</p>
-                    
-                    <button id="cancelAccountBtn" class="btn btn-danger">确认注销账号</button>
-                </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-submit">创建账户</button>
+                    </div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
     <script>
         // 切换表单标签
         document.querySelectorAll('.form-tab-btn').forEach(btn => {
@@ -114,29 +91,15 @@
             });
         });
 
-        // 账号信息修改提交
+        // 账号创建提交
         document.getElementById('accountForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('账号信息修改申请已提交');
-        });
-
-        // 账户属性修改提交
-        document.getElementById('attributesForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('账户属性修改成功');
-        });
-
-        // 账号注销
-        document.getElementById('cancelAccountBtn').addEventListener('click', function() {
-            if(confirm('确定要注销账号吗？此操作不可逆！')) {
-                // 实际项目中调用后端接口
-                alert('账号注销申请已提交，请等待审核');
-            }
+            alert('开户申请已提交');
         });
     </script>
     <script>
         // 加载侧边栏后设置激活状态
-        fetch('sidebar.html')
+        fetch('../sidebar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('sidebar-container').innerHTML = data;

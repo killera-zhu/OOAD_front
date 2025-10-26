@@ -1,215 +1,378 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <title>商户人员管理</title>
-  <link rel="stylesheet" href="../style.css">
-  <style>
-    /* 补充少量局部样式 */
-    .toolbar {
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人员管理 - 商户管理后台</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
     }
-    .toolbar input, .toolbar select {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border-bottom: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background: #f1f1f1;
-    }
-    .btn {
-      background-color: #1976d2;
-      color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .btn:hover {
-      background-color: #1565c0;
-    }
-    .btn-danger { background-color: #d32f2f; }
-    .btn-danger:hover { background-color: #b71c1c; }
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
+
     .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 400px;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
-    .modal-content label { display: block; margin-top: 10px; }
-    .modal-content input { width: 100%; padding: 6px; }
-  </style>
+    </style>
+
 </head>
 <body>
-  <header>
-    <div>商户管理系统</div>
-    <nav>
-      <a href="../index.html">首页</a>
-      <a href="#">帮助</a>
-    </nav>
-  </header>
+    <!-- 统一的 Header 格式 -->
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
 
-  <div class="container">
-    <aside class="sidebar">
-      <a href="../index.html">返回仪表盘</a>
-      <a href="#" class="active">管理人员</a>
-      <a href="merchant_service.html">管理服务</a>
-      <a href="merchant_provider.html">管理服务商</a>
-      <a href="merchant_payment.html">管理支付</a>
-      <a href="merchant_after_sales.html">管理售后</a>
-    </aside>
+    <div class="container">
+        <!-- 引入统一的侧边栏组件 -->
+        <div id="sidebar-container"></div>
 
-    <main class="main">
-      <h2>管理人员</h2>
+        <div class="main">
+            <h2>人员管理</h2>
 
-      <!-- 工具栏 -->
-      <div class="toolbar">
-        <div>
-          <input type="text" id="searchName" placeholder="输入姓名/账号查询">
-          <button class="btn" onclick="queryStaff()">查询</button>
+            <!-- 筛选和操作区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <input type="text" id="searchName" placeholder="输入姓名/账号查询">
+                    <button class="btn btn-search" onclick="queryStaff()">查询</button>
+                    <button class="btn btn-back" onclick="resetSearch()">重置</button>
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-add" onclick="openAddModal()">+ 新增人员</button>
+                </div>
+            </div>
+
+            <!-- 人员列表表格 -->
+            <table class="data-table" id="staffTable">
+                <thead>
+                    <tr>
+                        <th>账号</th>
+                        <th>姓名</th>
+                        <th>描述</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>staff001</td>
+                        <td>张三</td>
+                        <td>店铺管理员</td>
+                        <td><span class="status active">正常</span></td>
+                        <td>2025-10-01</td>
+                        <td>
+                            <button class="btn btn-delist" onclick="pauseStaff(this)">暂停</button>
+                            <button class="btn btn-delete" onclick="deleteStaff(this)">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>staff002</td>
+                        <td>李四</td>
+                        <td>客服专员</td>
+                        <td><span class="status pending">暂停</span></td>
+                        <td>2025-10-05</td>
+                        <td>
+                            <button class="btn btn-accept" onclick="resumeStaff(this)">恢复</button>
+                            <button class="btn btn-delete" onclick="deleteStaff(this)">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>staff003</td>
+                        <td>王五</td>
+                        <td>财务人员</td>
+                        <td><span class="status active">正常</span></td>
+                        <td>2025-10-10</td>
+                        <td>
+                            <button class="btn btn-delist" onclick="pauseStaff(this)">暂停</button>
+                            <button class="btn btn-delete" onclick="deleteStaff(this)">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div>
-          <button class="btn" onclick="openAddModal()">+ 新增人员</button>
-        </div>
-      </div>
+    </div>
 
-      <!-- 人员列表 -->
-      <table id="staffTable">
-        <thead>
-          <tr>
-            <th>账号</th>
-            <th>姓名</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>staff001</td>
-            <td>张三</td>
-            <td>正常</td>
-            <td>
-              <button class="btn" onclick="pauseStaff(this)">暂停</button>
-              <button class="btn btn-danger" onclick="deleteStaff(this)">删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>staff002</td>
-            <td>李四</td>
-            <td>暂停</td>
-            <td>
-              <button class="btn" onclick="resumeStaff(this)">恢复</button>
-              <button class="btn btn-danger" onclick="deleteStaff(this)">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- 弹窗：新增人员 -->
-      <div class="modal" id="addModal">
+    <!-- 新增人员弹窗 -->
+    <div class="modal-overlay" id="addModal" style="display: none;">
         <div class="modal-content">
-          <h3>新增人员账号</h3>
-          <label>账号：<input type="text" id="newAccount"></label>
-          <label>密码：<input type="password" id="newPassword"></label>
-          <label>描述：<input type="text" id="newDesc"></label>
-          <div style="text-align:right;margin-top:15px;">
-            <button class="btn" onclick="addStaff()">确认</button>
-            <button class="btn btn-danger" onclick="closeAddModal()">取消</button>
-          </div>
+            <h3>新增人员账号</h3>
+            <form id="addStaffForm" class="form-container" onsubmit="return handleAddStaff(event)">
+                <div class="form-group">
+                    <label>账号 <span style="color: red;">*</span></label>
+                    <input type="text" id="newAccount" required placeholder="请输入账号（字母、数字、下划线）">
+                    <small style="color: #666; font-size: 12px;">建议使用工号或英文名</small>
+                </div>
+                <div class="form-group">
+                    <label>密码 <span style="color: red;">*</span></label>
+                    <input type="password" id="newPassword" required placeholder="请输入密码（至少6位）">
+                    <small style="color: #666; font-size: 12px;">密码长度至少6位</small>
+                </div>
+                <div class="form-group">
+                    <label>姓名 <span style="color: red;">*</span></label>
+                    <input type="text" id="newName" required placeholder="请输入真实姓名">
+                </div>
+                <div class="form-group">
+                    <label>描述/职位</label>
+                    <input type="text" id="newDesc" placeholder="如：店铺管理员、客服专员">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-submit" type="submit">确认新增</button>
+                    <button class="btn btn-cancel" type="button" onclick="closeAddModal()">取消</button>
+                </div>
+            </form>
         </div>
-      </div>
-    </main>
-  </div>
+    </div>
 
-  <script src="../script.js"></script>
-  <script>
-    // 打开/关闭新增弹窗
-    function openAddModal() {
-      document.getElementById('addModal').style.display = 'flex';
-    }
-    function closeAddModal() {
-      document.getElementById('addModal').style.display = 'none';
-    }
+    <!-- 引入统一的脚本 -->
+    <script src="../script.js"></script>
+    <script>
+        // 加载侧边栏
+        fetch('../sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                // 设置当前激活菜单
+                const staffMenu = document.querySelector('a[onclick*="staffMenu"]');
+                if (staffMenu) {
+                    staffMenu.classList.add('active');
+                    toggleMenu('staffMenu');
+                }
+            });
 
-    // 增加人员
-    function addStaff() {
-      const acc = document.getElementById('newAccount').value.trim();
-      const pwd = document.getElementById('newPassword').value.trim();
-      if(!acc || !pwd) return alert("请输入账号和密码");
-      const table = document.getElementById('staffTable').querySelector('tbody');
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${acc}</td>
-        <td>新员工</td>
-        <td>正常</td>
-        <td>
-          <button class="btn" onclick="pauseStaff(this)">暂停</button>
-          <button class="btn btn-danger" onclick="deleteStaff(this)">删除</button>
-        </td>`;
-      table.appendChild(tr);
-      closeAddModal();
-      alert("新增成功！");
-    }
+        /*************************************************************************
+         * 打开/关闭新增弹窗
+         *************************************************************************/
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'flex';
+            document.getElementById('addStaffForm').reset();
+        }
 
-    // 暂停人员
-    function pauseStaff(btn) {
-      const row = btn.closest('tr');
-      const status = row.children[2];
-      if(status.textContent === '暂停') return alert('已暂停');
-      status.textContent = '暂停';
-      btn.outerHTML = '<button class="btn" onclick="resumeStaff(this)">恢复</button>';
-      alert("已暂停该人员");
-    }
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('addStaffForm').reset();
+        }
 
-    // 恢复人员
-    function resumeStaff(btn) {
-      const row = btn.closest('tr');
-      const status = row.children[2];
-      status.textContent = '正常';
-      btn.outerHTML = '<button class="btn" onclick="pauseStaff(this)">暂停</button>';
-      alert("已恢复该人员");
-    }
+        /*************************************************************************
+         * 新增人员
+         *************************************************************************/
+        function handleAddStaff(event) {
+            event.preventDefault();
+            
+            const acc = document.getElementById('newAccount').value.trim();
+            const pwd = document.getElementById('newPassword').value.trim();
+            const name = document.getElementById('newName').value.trim();
+            const desc = document.getElementById('newDesc').value.trim() || '普通员工';
 
-    // 删除人员
-    function deleteStaff(btn) {
-      const row = btn.closest('tr');
-      const status = row.children[2].textContent;
-      if(status !== '暂停') return alert("只有暂停的人员才能删除！");
-      row.remove();
-      alert("删除成功！");
-    }
+            // 验证账号格式
+            if (!/^[a-zA-Z0-9_]{4,20}$/.test(acc)) {
+                alert('账号格式错误！\n要求：4-20位字母、数字或下划线');
+                return false;
+            }
 
-    // 查询人员（简单模拟）
-    function queryStaff() {
-      const key = document.getElementById('searchName').value.trim();
-      const rows = document.querySelectorAll('#staffTable tbody tr');
-      rows.forEach(row => {
-        const name = row.children[1].textContent;
-        const acc = row.children[0].textContent;
-        row.style.display = (name.includes(key) || acc.includes(key)) ? '' : 'none';
-      });
-    }
-  </script>
+            // 验证密码长度
+            if (pwd.length < 6) {
+                alert('密码长度至少6位！');
+                return false;
+            }
+
+            // 检查账号是否已存在
+            const existingRows = document.querySelectorAll('#staffTable tbody tr');
+            for (let row of existingRows) {
+                if (row.children[0].textContent === acc) {
+                    alert('该账号已存在！请使用其他账号。');
+                    return false;
+                }
+            }
+
+            // 创建新行
+            const table = document.getElementById('staffTable').querySelector('tbody');
+            const tr = document.createElement('tr');
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            tr.innerHTML = `
+                <td>${escapeHtml(acc)}</td>
+                <td>${escapeHtml(name)}</td>
+                <td>${escapeHtml(desc)}</td>
+                <td><span class="status active">正常</span></td>
+                <td>${currentDate}</td>
+                <td>
+                    <button class="btn btn-delist" onclick="pauseStaff(this)">暂停</button>
+                    <button class="btn btn-delete" onclick="deleteStaff(this)">删除</button>
+                </td>
+            `;
+            
+            table.insertBefore(tr, table.firstChild); // 插入到最前面
+            closeAddModal();
+            alert('新增人员成功！');
+            return false;
+        }
+
+        /*************************************************************************
+         * 暂停人员
+         *************************************************************************/
+        function pauseStaff(btn) {
+            const row = btn.closest('tr');
+            const statusCell = row.children[3];
+            const statusSpan = statusCell.querySelector('.status');
+
+            if (statusSpan.textContent === '暂停') {
+                alert('该人员已处于暂停状态');
+                return;
+            }
+
+            if (!confirm('确认要暂停该人员吗？\n暂停后该人员将无法登录系统。')) {
+                return;
+            }
+
+            // 更新状态
+            statusSpan.textContent = '暂停';
+            statusSpan.className = 'status pending';
+
+            // 替换按钮
+            btn.outerHTML = '<button class="btn btn-accept" onclick="resumeStaff(this)">恢复</button>';
+            
+            alert('已暂停该人员');
+        }
+
+        /*************************************************************************
+         * 恢复人员
+         *************************************************************************/
+        function resumeStaff(btn) {
+            const row = btn.closest('tr');
+            const statusCell = row.children[3];
+            const statusSpan = statusCell.querySelector('.status');
+
+            if (!confirm('确认要恢复该人员吗？\n恢复后该人员可以正常登录系统。')) {
+                return;
+            }
+
+            // 更新状态
+            statusSpan.textContent = '正常';
+            statusSpan.className = 'status active';
+
+            // 替换按钮
+            btn.outerHTML = '<button class="btn btn-delist" onclick="pauseStaff(this)">暂停</button>';
+            
+            alert('已恢复该人员');
+        }
+
+        /*************************************************************************
+         * 删除人员
+         *************************************************************************/
+        function deleteStaff(btn) {
+            const row = btn.closest('tr');
+            const account = row.children[0].textContent;
+            const name = row.children[1].textContent;
+            const statusCell = row.children[3];
+            const statusSpan = statusCell.querySelector('.status');
+            const status = statusSpan.textContent;
+
+            // 只有暂停的人员才能删除
+            if (status !== '暂停') {
+                alert('只有状态为"暂停"的人员才能删除！\n请先暂停该人员。');
+                return;
+            }
+
+            if (!confirm(`确认要删除人员「${name}」（账号：${account}）吗？\n此操作不可恢复！`)) {
+                return;
+            }
+
+            row.remove();
+            alert('删除成功！');
+        }
+
+        /*************************************************************************
+         * 查询人员
+         *************************************************************************/
+        function queryStaff() {
+            const key = document.getElementById('searchName').value.trim().toLowerCase();
+            
+            if (!key) {
+                alert('请输入查询关键词');
+                return;
+            }
+
+            const rows = document.querySelectorAll('#staffTable tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const account = row.children[0].textContent.toLowerCase();
+                const name = row.children[1].textContent.toLowerCase();
+                const desc = row.children[2].textContent.toLowerCase();
+                
+                // 匹配账号、姓名或描述
+                const isMatch = account.includes(key) || name.includes(key) || desc.includes(key);
+                row.style.display = isMatch ? '' : 'none';
+                
+                if (isMatch) visibleCount++;
+            });
+
+            if (visibleCount === 0) {
+                alert('未找到匹配的人员');
+            }
+        }
+
+        /*************************************************************************
+         * 重置搜索
+         *************************************************************************/
+        function resetSearch() {
+            document.getElementById('searchName').value = '';
+            const rows = document.querySelectorAll('#staffTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        /*************************************************************************
+         * HTML 转义函数
+         *************************************************************************/
+        function escapeHtml(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[m]));
+        }
+
+        /*************************************************************************
+         * 初始化
+         *************************************************************************/
+        document.addEventListener('DOMContentLoaded', () => {
+            // 点击弹窗外部关闭
+            document.getElementById('addModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('addModal')) {
+                    closeAddModal();
+                }
+            });
+
+            // 回车键触发查询
+            document.getElementById('searchName').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    queryStaff();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支付查询 - 商户管理后台</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header>
+    <div class="header-title">商户管理后台</div>
+    <nav>
+      <span class="user-icon">👤</span>
+      <a href="#" class="logout-link">退出登录</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="sidebar-container"></div>
+
+    <div class="main">
+      <h2>支付查询</h2>
+
+      <div class="filter-section">
+        <div class="filter-group">
+          <input type="text" id="searchPayment" placeholder="输入订单号/顾客姓名/状态/时间">
+          <button class="btn btn-search" onclick="queryPayment()">查询</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>订单号</th>
+            <th>支付金额</th>
+            <th>支付时间</th>
+            <th>支付状态</th>
+            <th>支付方式</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OD2025001</td>
+            <td>￥1999</td>
+            <td>2025-10-20</td>
+            <td><span class="status approved">已支付</span></td>
+            <td>支付宝</td>
+            <td><button class="btn btn-view" onclick="openPaymentModal('OD2025001')">查看详情</button></td>
+          </tr>
+          <tr>
+            <td>OD2025003</td>
+            <td>￥899</td>
+            <td>2025-10-21</td>
+            <td><span class="status unpaid">未支付</span></td>
+            <td>微信支付</td>
+            <td><button class="btn btn-view" onclick="openPaymentModal('OD2025003')">查看详情</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 支付详情弹窗 -->
+  <div class="modal-overlay" id="paymentModal" style="display:none;">
+    <div class="modal-content">
+      <h3>支付详情</h3>
+      <table class="detail-table">
+        <tr><th>订单号：</th><td id="paymentOrderId">OD2025001</td></tr>
+        <tr><th>支付金额：</th><td id="paymentAmount">￥1999</td></tr>
+        <tr><th>支付时间：</th><td id="paymentTime">2025-10-20 14:30:25</td></tr>
+        <tr><th>支付状态：</th><td id="paymentStatus"><span class="status approved">已支付</span></td></tr>
+        <tr><th>支付方式：</th><td id="paymentMethod">支付宝</td></tr>
+        <tr><th>交易流水号：</th><td id="paymentTransactionId">TR20250001</td></tr>
+      </table>
+      <div class="detail-actions">
+        <button class="btn btn-back" onclick="closeModal('paymentModal')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../script.js"></script>
+  <script>
+    fetch('../sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        toggleMenu('paymentMenu');
+      });
+
+    function openPaymentModal(orderId) {
+      document.getElementById('paymentModal').style.display = 'flex';
+      document.getElementById('paymentOrderId').textContent = orderId;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function queryPayment() {
+      const keyword = document.getElementById('searchPayment').value;
+      alert('模拟查询支付记录: ' + keyword);
+    }
+  </script>
+</body>
+</html>

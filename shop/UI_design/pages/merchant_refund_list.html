@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>退款查询 - 商户管理后台</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header>
+    <div class="header-title">商户管理后台</div>
+    <nav>
+      <span class="user-icon">👤</span>
+      <a href="#" class="logout-link">退出登录</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="sidebar-container"></div>
+
+    <div class="main">
+      <h2>退款查询</h2>
+
+      <div class="filter-section">
+        <div class="filter-group">
+          <input type="text" id="searchRefund" placeholder="输入订单号/顾客姓名/状态/时间">
+          <button class="btn btn-search" onclick="queryRefund()">查询</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>订单号</th>
+            <th>退款金额</th>
+            <th>退款时间</th>
+            <th>退款状态</th>
+            <th>退款方式</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OD2025002</td>
+            <td>￥1999</td>
+            <td>2025-10-22</td>
+            <td><span class="status approved">已退款</span></td>
+            <td>微信支付</td>
+            <td><button class="btn btn-view" onclick="openRefundModal('OD2025002')">查看详情</button></td>
+          </tr>
+          <tr>
+            <td>OD2025004</td>
+            <td>￥599</td>
+            <td>2025-10-23</td>
+            <td><span class="status pending">退款中</span></td>
+            <td>支付宝</td>
+            <td><button class="btn btn-view" onclick="openRefundModal('OD2025004')">查看详情</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 退款详情弹窗 -->
+  <div class="modal-overlay" id="refundModal" style="display:none;">
+    <div class="modal-content">
+      <h3>退款详情</h3>
+      <table class="detail-table">
+        <tr><th>订单号：</th><td id="refundOrderId">OD2025002</td></tr>
+        <tr><th>退款金额：</th><td id="refundAmount">￥1999</td></tr>
+        <tr><th>退款时间：</th><td id="refundTime">2025-10-22 10:15:30</td></tr>
+        <tr><th>退款状态：</th><td id="refundStatus"><span class="status approved">已退款</span></td></tr>
+        <tr><th>退款方式：</th><td id="refundMethod">微信支付</td></tr>
+        <tr><th>退款原因：</th><td id="refundReason">商品破损</td></tr>
+        <tr><th>交易流水号：</th><td id="refundTransactionId">RF20250002</td></tr>
+      </table>
+      <div class="detail-actions">
+        <button class="btn btn-back" onclick="closeModal('refundModal')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../script.js"></script>
+  <script>
+    fetch('../sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        toggleMenu('paymentMenu');
+      });
+
+    function openRefundModal(orderId) {
+      document.getElementById('refundModal').style.display = 'flex';
+      document.getElementById('refundOrderId').textContent = orderId;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function queryRefund() {
+      const keyword = document.getElementById('searchRefund').value;
+      alert('模拟查询退款记录: ' + keyword);
+    }
+  </script>
+</body>
+</html>

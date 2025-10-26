@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>退货验收 - 商户管理后台</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header>
+    <div class="header-title">商户管理后台</div>
+    <nav>
+      <span class="user-icon">👤</span>
+      <a href="#" class="logout-link">退出登录</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="sidebar-container"></div>
+
+    <div class="main">
+      <h2>退货验收</h2>
+
+      <div class="filter-section">
+        <div class="filter-group">
+          <input type="text" id="searchReceive" placeholder="输入快递单号">
+          <button class="btn btn-search" onclick="queryReceive()">查询</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>售后编号</th>
+            <th>商品名称</th>
+            <th>顾客姓名</th>
+            <th>售后类型</th>
+            <th>运单号</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AS2025001</td>
+            <td>智能手机</td>
+            <td>张三</td>
+            <td>退货</td>
+            <td>YD10001</td>
+            <td><span class="status pending">待验收</span></td>
+            <td>
+              <button class="btn btn-accept" onclick="receiveGoods(this)">验收</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../script.js"></script>
+  <script>
+    fetch('../sidebar.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        const menu = document.querySelector('a[onclick*="afterSalesMenu"]');
+        if (menu) {
+          menu.classList.add('active');
+          toggleMenu('afterSalesMenu');
+        }
+      });
+
+    function receiveGoods(btn) {
+      const row = btn.closest('tr');
+      const statusCell = row.querySelector('.status');
+      statusCell.textContent = '已验收';
+      statusCell.className = 'status approved';
+      btn.disabled = true;
+      btn.textContent = '已验收';
+      alert('验收完成');
+    }
+
+    function queryReceive() {
+      const keyword = document.getElementById('searchReceive').value;
+      alert('模拟查询退回商品: ' + keyword);
+    }
+  </script>
+</body>
+</html>

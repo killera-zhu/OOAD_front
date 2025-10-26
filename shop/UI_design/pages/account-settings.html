@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号设置 - 商户管理后台</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">商户管理后台</div>
+        <nav>
+            <span class="user-icon">👤</span>
+            <a href="#" class="logout-link">退出登录</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 引入侧边栏 -->
+        <div id="sidebar-container"></div>
+
+        <div class="main">
+            <h2>账号设置</h2>
+            
+            <div class="form-tabs">
+                <button class="form-tab-btn active" data-tab="account">账号信息</button>
+                <button class="form-tab-btn" data-tab="attributes">账户属性</button>
+                <button class="form-tab-btn" data-tab="cancellation">账号注销</button>
+            </div>
+
+            <!-- 账号信息设置 -->
+            <div class="form-panel active" id="accountPanel">
+                <form id="accountForm" class="form-container">
+                    <div class="form-group">
+                        <label>商户名称：</label>
+                        <input type="text" name="merchantName" value="科技数码专营店" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>商品数目上限：</label>
+                        <input type="number" name="productLimit" value="100" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>商户员工上限：</label>
+                        <input type="number" name="staffLimit" value="10" min="1" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-submit">提交修改</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit2" class="btn btn-submit">暂停账户</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 账户属性设置 -->
+            <div class="form-panel" id="attributesPanel">
+                <form id="attributesForm" class="form-container">
+                    <div class="form-group">
+                        <label>联系人姓名：</label>
+                        <input type="text" name="contactName" value="张三" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>联系电话：</label>
+                        <input type="tel" name="contactPhone" value="13800138000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>联系地址：</label>
+                        <textarea name="contactAddress" rows="3" required>北京市海淀区XX街道XX号</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>免邮门槛：</label>
+                        <input type="number" name="freeShippingThreshold" value="99" min="0" required>
+                        <span>元</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-submit">提交修改</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 账号注销 -->
+            <div class="form-panel" id="cancellationPanel">
+                <div class="warning-box">
+                    <h3>账号注销须知</h3>
+                    <p>1. 注销账号前请确保所有订单分账已完成</p>
+                    <p>2. 账号注销后，所有商品、活动等信息将被清除</p>
+                    <p>3. 注销操作不可逆，请谨慎操作</p>
+                    
+                    <button id="cancelAccountBtn" class="btn btn-danger">确认注销账号</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        // 切换表单标签
+        document.querySelectorAll('.form-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 切换按钮状态
+                document.querySelectorAll('.form-tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 切换表单面板
+                const tab = this.dataset.tab;
+                document.querySelectorAll('.form-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.getElementById(`${tab}Panel`).classList.add('active');
+            });
+        });
+
+        // 账号信息修改提交
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('账号信息修改申请已提交');
+        });
+        // 暂停提交
+        document.getElementById('accountForm').addEventListener('submit2', function(e) {
+            e.preventDefault();
+            alert('账号已暂停');
+        });
+
+        // 账户属性修改提交
+        document.getElementById('attributesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('账户属性修改成功');
+        });
+
+        // 账号注销
+        document.getElementById('cancelAccountBtn').addEventListener('click', function() {
+            if(confirm('确定要注销账号吗？此操作不可逆！')) {
+                // 实际项目中调用后端接口
+                alert('账号注销申请已提交，请等待审核');
+            }
+        });
+    </script>
+    <script>
+        // 加载侧边栏后设置激活状态
+        fetch('../sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                document.querySelector('a[onclick="toggleMenu(\'accountMenu\')"]').classList.add('active');
+                toggleMenu('accountMenu');
+            });
+    </script>
+</body>
+</html>

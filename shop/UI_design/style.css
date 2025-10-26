@@ -176,3 +176,325 @@ footer {
     padding: 20px;
     font-size: 13px;
 }
+
+/* 筛选区域样式 */
+.filter-section {
+    background-color: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: 500;
+}
+
+.filter-group input, .filter-group select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 表格样式 */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+}
+
+.data-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-search {
+    background-color: #4285f4;
+    color: white;
+}
+
+.btn-add {
+    background-color: #34a853;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-view {
+    background-color: #4285f4;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-edit {
+    background-color: #fbbc05;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-delist {
+    background-color: #fbbc05;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #ea4335;
+    color: white;
+}
+
+.btn-accept {
+    background-color: #34a853;
+    color: white;
+}
+
+.btn-reject {
+    background-color: #ea4335;
+    color: white;
+}
+
+.btn-ship {
+    background-color: #4285f4;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #ea4335;
+    color: white;
+}
+
+.btn-submit {
+    background-color: #4285f4;
+    color: white;
+}
+
+.btn-back {
+    background-color: #9e9e9e;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background-color: #ea4335;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+/* 详情页样式 */
+.detail-card {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section h3 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.detail-table {
+    width: 100%;
+}
+
+.detail-table tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-table th {
+    width: 200px;
+    padding: 10px 0;
+    font-weight: 600;
+}
+
+.detail-table td {
+    padding: 10px 0;
+}
+
+.detail-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* 表单样式 */
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* 标签页样式 */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    border-bottom-color: #4285f4;
+    color: #4285f4;
+    font-weight: 600;
+}
+
+.form-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.form-tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-tab-btn.active {
+    border-bottom: 3px solid #4285f4;
+    color: #4285f4;
+    font-weight: 600;
+}
+
+.form-panel {
+    display: none;
+}
+
+.form-panel.active {
+    display: block;
+}
+
+/* 状态标签样式 */
+.status {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: white;
+}
+
+.status.approved {
+    background-color: #34a853;
+}
+
+.status.pending {
+    background-color: #fbbc05;
+}
+
+.status.rejected {
+    background-color: #ea4335;
+}
+
+.status.active {
+    background-color: #34a853;
+}
+
+.status.shipping {
+    background-color: #4285f4;
+}
+
+.status.completed {
+    background-color: #9e9e9e;
+}
+
+.status.unpaid {
+    background-color: #ea4335;
+}
+
+/* 警告框样式 */
+.warning-box {
+    background-color: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.warning-box h3 {
+    color: #f57c00;
+    margin-top: 0;
+}
+
+/* 捆绑商品字段样式 */
+.bundle-fields {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+}
