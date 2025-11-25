@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>预约管理</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .main h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .search-container button {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2196F3;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #1976D2;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f4f6f8;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            margin: 0 2px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-confirm {
+            background-color: #4CAF50;
+        }
+
+        .btn-confirm:hover {
+            background-color: #43A047;
+        }
+
+        /* 移除了 .btn-edit 的样式，因为修改时间功能已删除 */
+
+        .btn-cancel {
+            background-color: #f44336;
+        }
+
+        .btn-cancel:hover {
+            background-color: #d32f2f;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-buttons {
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            margin: 0 8px;
+            padding: 6px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-ok {
+            background-color: #2196F3;
+            color: #fff;
+        }
+
+        .btn-cancel2 {
+            background-color: #ccc;
+        }
+
+        textarea {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            width: 80%;
+            height: 60px;
+            margin-top: 10px;
+            resize: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div style="display:flex; align-items:center;"><span>维修师傅管理后台</span></div>
+        <nav><span>👤 维修师傅</span> <a href="index-pc.html">返回首页</a></nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a href="service-order-list.html">📝 管理服务单</a>
+            <a href="appointment-list.html">📅 管理预约</a>
+        </div>
+
+        <div class="main">
+            <h2>预约管理</h2>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="搜索预约号/顾客姓名">
+                <button onclick="searchTable()">搜索</button>
+                <select id="statusFilter" onchange="filterByStatus()">
+                    <option value="全部">全部状态</option>
+                    <option value="待上门">待上门</option>
+                    <option value="已上门">已上门</option>
+                    <option value="已完成">已完成</option>
+                    <option value="已取消">已取消</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>预约号</th>
+                        <th>顾客姓名</th>
+                        <th>联系电话</th>
+                        <th>预约时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentTableBody">
+                    <tr data-status="待上门">
+                        <td>AP1001</td>
+                        <td>王五</td>
+                        <td>13800003333</td>
+                        <td>2025-10-25 10:00</td>
+                        <td class="status">待上门</td>
+                        <td>
+                            <button class="btn btn-confirm btn-visit"
+                                onclick="confirmAction(this,'已上门','确认上门')">确认上门</button>
+                            <button class="btn btn-confirm btn-complete" style="display:none;"
+                                onclick="confirmAction(this,'已完成','确认完成')">确认完成</button>
+                            <button class="btn btn-cancel" onclick="showCancelModal(this)">取消预约</button>
+                        </td>
+                    </tr>
+                    <tr data-status="已上门">
+                        <td>AP1002</td>
+                        <td>赵六</td>
+                        <td>13800004444</td>
+                        <td>2025-10-26 14:00</td>
+                        <td class="status">已上门</td>
+                        <td>
+                            <button class="btn btn-confirm btn-visit" style="display:none;"
+                                onclick="confirmAction(this,'已上门','确认上门')">确认上门</button>
+                            <button class="btn btn-confirm btn-complete"
+                                onclick="confirmAction(this,'已完成','确认完成')">确认完成</button>
+                            <button class="btn btn-cancel" onclick="showCancelModal(this)">取消预约</button>
+                        </td>
+                    </tr>
+                    <tr data-status="已取消">
+                        <td>AP1003</td>
+                        <td>钱七</td>
+                        <td>13800005555</td>
+                        <td>2025-10-27 09:00</td>
+                        <td class="status">已取消</td>
+                        <td></td>
+                    </tr>
+                    <tr data-status="待上门">
+                        <td>AP1004</td>
+                        <td>孙八</td>
+                        <td>13800006666</td>
+                        <td>2025-10-28 16:00</td>
+                        <td class="status">待上门</td>
+                        <td>
+                            <button class="btn btn-confirm btn-visit"
+                                onclick="confirmAction(this,'已上门','确认上门')">确认上门</button>
+                            <button class="btn btn-confirm btn-complete" style="display:none;"
+                                onclick="confirmAction(this,'已完成','确认完成')">确认完成</button>
+                            <button class="btn btn-cancel" onclick="showCancelModal(this)">取消预约</button>
+                        </td>
+                    </tr>
+                    <tr data-status="已完成">
+                        <td>AP1005</td>
+                        <td>李九</td>
+                        <td>13800007777</td>
+                        <td>2025-10-29 11:00</td>
+                        <td class="status">已完成</td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3 id="confirmMessage">确定执行此操作？</h3>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="confirmYes">确定</button>
+                <button class="btn-cancel2" onclick="closeModal('confirmModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <h3>申请取消预约</h3>
+            <textarea id="cancelReasonInput" placeholder="请输入取消理由"></textarea>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="saveCancelBtn">确认取消</button>
+                <button class="btn-cancel2" onclick="closeModal('cancelModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRow = null;
+        let confirmCallback = null;
+
+        function updateButtons(row) {
+            const status = row.getAttribute('data-status');
+
+            // 获取各类按钮
+            const btnVisit = row.querySelector('.btn-visit');
+            const btnComplete = row.querySelector('.btn-complete');
+            const btnCancel = row.querySelector('.btn-cancel');
+
+            // 先全部隐藏
+            if (btnVisit) btnVisit.style.display = 'none';
+            if (btnComplete) btnComplete.style.display = 'none';
+            if (btnCancel) btnCancel.style.display = 'none';
+
+            // 根据状态显示对应按钮
+            if (status === '待上门') {
+                if (btnVisit) btnVisit.style.display = '';
+                if (btnCancel) btnCancel.style.display = '';
+            } else if (status === '已上门') {
+                // 已上门后：显示 确认完成 和 取消预约
+                if (btnComplete) btnComplete.style.display = '';
+                if (btnCancel) btnCancel.style.display = '';
+            }
+            // 已完成、已取消 不显示操作按钮
+        }
+
+        // 初始化所有行的按钮状态
+        document.querySelectorAll('#appointmentTableBody tr').forEach(updateButtons);
+
+        // 确认操作 (上门 或 完成)
+        function confirmAction(btn, status, actionName) {
+            currentRow = btn.closest('tr');
+            document.getElementById('confirmMessage').textContent = `确定要${actionName}吗？`;
+            confirmCallback = () => {
+                currentRow.querySelector('.status').textContent = status;
+                currentRow.setAttribute('data-status', status);
+                updateButtons(currentRow);
+                closeModal('confirmModal');
+                alert(`${actionName}成功！`);
+            };
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        // 删除了 showRescheduleModal 和 saveTimeBtn.onclick 逻辑
+
+        // 取消预约弹窗
+        function showCancelModal(btn) {
+            currentRow = btn.closest('tr');
+            document.getElementById('cancelReasonInput').value = "";
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+
+        document.getElementById('saveCancelBtn').onclick = function () {
+            const reason = document.getElementById('cancelReasonInput').value.trim();
+            if (!reason) {
+                alert('请输入取消理由！');
+                return;
+            }
+
+            // 由于移除了“待用户确认”，取消后直接变更为“已取消”
+            currentRow.querySelector('.status').textContent = '已取消';
+            currentRow.setAttribute('data-status', '已取消');
+            updateButtons(currentRow);
+
+            alert('预约已取消！');
+            closeModal('cancelModal');
+        };
+
+        document.getElementById('confirmYes').onclick = function () {
+            if (confirmCallback) confirmCallback();
+        };
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('appointmentTableBody');
+            const trs = table.getElementsByTagName('tr');
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            for (let i = 0; i < trs.length; i++) {
+                const tds = trs[i].getElementsByTagName('td');
+                if (tds.length > 0) {
+                    const matchesSearch = tds[0].textContent.toLowerCase().includes(input)
+                        || tds[1].textContent.toLowerCase().includes(input);
+                    const matchesStatus = statusFilter === '全部' || tds[4].textContent === statusFilter;
+                    trs[i].style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+                }
+            }
+        }
+
+        function filterByStatus() {
+            searchTable();
+        }
+    </script>
+</body>
+
+</html>

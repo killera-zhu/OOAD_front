@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务单管理 - 手机端</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        header {
+            background: #2196F3;
+            color: #fff;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .left {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 5px 10px;
+            background: #1976D2;
+            border-radius: 4px;
+        }
+
+        .main {
+            padding: 10px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .search-container input,
+        .search-container select,
+        .search-container button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .search-container button {
+            background: #2196F3;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background: #1976D2;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 14px;
+        }
+
+        .order-info .status {
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .toggle-details {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #1976D2;
+            cursor: pointer;
+        }
+
+        .details {
+            display: none;
+            margin-top: 8px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .details div {
+            margin-bottom: 4px;
+        }
+
+        .order-actions {
+            display: none;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .order-actions button {
+            flex: 1 1 calc(50% - 6px);
+            padding: 8px;
+            font-size: 14px;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-receipt {
+            background: #4CAF50;
+        }
+
+        .btn-complete {
+            background: #2196F3;
+        }
+
+        .btn-return {
+            background: #f44336;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 8px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-ok {
+            background: #2196F3;
+            color: #fff;
+        }
+
+        .btn-cancel2 {
+            background: #ccc;
+        }
+
+        textarea {
+            width: 90%;
+            height: 60px;
+            margin: 10px 0 0 0;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="left">维修师傅管理后台</div>
+        <a href="index-phone.html">返回首页</a>
+    </header>
+
+    <div class="main">
+        <h2>服务单管理</h2>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="搜索服务单号/快递单号/顾客姓名">
+            <button onclick="searchOrders()">搜索</button>
+            <select id="statusFilter" onchange="filterByStatus()">
+                <option value="全部">全部状态</option>
+                <option value="待收件">待收件</option>
+                <option value="已收件">已收件</option>
+                <option value="已完成">已完成</option>
+                <option value="已退回">已退回</option>
+            </select>
+        </div>
+
+        <div id="ordersContainer"></div>
+    </div>
+
+    <!-- 弹窗：理由 -->
+    <div id="reasonModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalMessage">请输入操作理由：</h3>
+            <textarea id="reasonInput"></textarea>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="submitReason">提交</button>
+                <button class="btn-cancel2" onclick="closeModal('reasonModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：上传照片 -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <h3>上传照片或拍照完成服务</h3>
+            <div style="margin:10px 0;">
+                <button class="btn-complete" style="margin-right:10px;">选择文件</button>
+                <button class="btn-complete">拍照</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="submitPhoto">确认完成</button>
+                <button class="btn-cancel2" onclick="closeModal('photoModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const services = [
+            { so: 'SO1001', kd: 'KD20251024001', name: '张三', phone: '13800001111', status: '待收件', details: { serviceName: '上门维修', product: '电视机', merchant: '某家电公司', area: '北京市朝阳区', serviceStatus: '待收件', content: '电视机维修', address: '北京市朝阳区某小区', aftersale: '无', orderInfo: '订单编号12345' } },
+            { so: 'SO1002', kd: 'KD20251024002', name: '李四', phone: '13800002222', status: '已收件', details: { serviceName: '家电维修', product: '洗衣机', merchant: '某家电公司', area: '上海市浦东新区', serviceStatus: '已收件', content: '洗衣机维修', address: '上海市浦东新区小区', aftersale: '无', orderInfo: '订单编号12346' } },
+            { so: 'SO1003', kd: 'KD20251024003', name: '王五', phone: '13800003333', status: '待收件', details: { serviceName: '家电清洗', product: '空调', merchant: '家电连锁', area: '广州市天河区', serviceStatus: '待收件', content: '空调清洗保养', address: '广州市天河区某小区', aftersale: '无', orderInfo: '订单编号12347' } },
+            { so: 'SO1004', kd: 'KD20251024004', name: '赵六', phone: '13800004444', status: '已完成', details: { serviceName: '电脑维修', product: '笔记本', merchant: '电脑专修店', area: '深圳市福田区', serviceStatus: '已完成', content: '笔记本更换硬盘', address: '深圳市福田区小区', aftersale: '无', orderInfo: '订单编号12348' } }
+        ];
+
+        const ordersContainer = document.getElementById('ordersContainer');
+        let currentCard = null;
+        let actionName = '';
+        let actionStatus = '';
+
+        function renderOrders(list = services) {
+            ordersContainer.innerHTML = '';
+            list.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                card.setAttribute('data-status', s.status);
+                card.innerHTML = `
+                    <div class="order-info">
+                        <div>服务单号: ${s.so}</div>
+                        <div>快递单号: ${s.kd}</div>
+                        <div>顾客: ${s.name}</div>
+                        <div>电话: ${s.phone}</div>
+                        <div class="status">${s.status}</div>
+                        <div class="toggle-details" onclick="toggleDetails(this)">显示详细信息</div>
+                        <div class="details">
+                            <div>服务名称: ${s.details.serviceName}</div>
+                            <div>产品: ${s.details.product}</div>
+                            <div>商户: ${s.details.merchant}</div>
+                            <div>服务地区: ${s.details.area}</div>
+                            <div>服务单状态: <span class="detail-status">${s.details.serviceStatus}</span></div>
+                            <div>服务内容: ${s.details.content}</div>
+                            <div>顾客地址: ${s.details.address}</div>
+                            <div>售后信息: ${s.details.aftersale}</div>
+                            <div>订单信息: ${s.details.orderInfo}</div>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn-receipt">确认收件</button>
+                        <button class="btn-complete">确认完成</button>
+                        <button class="btn-return">退回</button>
+                    </div>
+                `;
+                ordersContainer.appendChild(card);
+                updateButtons(card);
+                attachActionHandlers(card);
+            });
+        }
+
+        function toggleDetails(el) {
+            const details = el.nextElementSibling;
+            const actions = el.parentElement.nextElementSibling;
+            const isVisible = details.style.display === 'block';
+            details.style.display = isVisible ? 'none' : 'block';
+            actions.style.display = isVisible ? 'none' : 'flex';
+            el.textContent = isVisible ? '显示详细信息' : '隐藏详细信息';
+        }
+
+        function attachActionHandlers(card) {
+            const btnReceipt = card.querySelector('.btn-receipt');
+            const btnComplete = card.querySelector('.btn-complete');
+            const btnReturn = card.querySelector('.btn-return');
+
+            btnReceipt.onclick = () => openAction(card, '已收件', '确认收件');
+            btnComplete.onclick = () => openAction(card, '已完成', '确认完成');
+            btnReturn.onclick = () => openAction(card, '已退回', '退回');
+        }
+
+        function openAction(card, newStatus, name) {
+            currentCard = card;
+            actionStatus = newStatus;
+            actionName = name;
+            if (name === '确认收件') {
+                confirmCurrentAction();
+            } else if (name === '确认完成') {
+                document.getElementById('photoModal').style.display = 'flex';
+            } else {
+                document.getElementById('reasonInput').value = '';
+                document.getElementById('reasonModal').style.display = 'flex';
+            }
+        }
+
+        document.getElementById('submitReason').onclick = () => {
+            const reason = document.getElementById('reasonInput').value.trim();
+            if (!reason) { alert('请输入理由'); return; }
+            confirmCurrentAction(reason);
+            closeModal('reasonModal');
+        };
+
+        document.getElementById('submitPhoto').onclick = () => {
+            confirmCurrentAction();
+            closeModal('photoModal');
+            alert('确认完成成功！（已上传照片/拍照）');
+        };
+
+        function confirmCurrentAction(reason = '') {
+            currentCard.querySelector('.status').textContent = actionStatus;
+            currentCard.setAttribute('data-status', actionStatus);
+            const detailStatus = currentCard.querySelector('.detail-status');
+            if (detailStatus) detailStatus.textContent = actionStatus;
+            updateButtons(currentCard);
+            if (reason) alert(`${actionName}成功！理由：${reason}`);
+            else if (actionName !== '确认完成') alert(`${actionName}成功！`);
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function updateButtons(card) {
+            const status = card.getAttribute('data-status');
+            const btnReceipt = card.querySelector('.btn-receipt');
+            const btnComplete = card.querySelector('.btn-complete');
+            const btnReturn = card.querySelector('.btn-return');
+
+            btnReceipt.style.display = (status === '待收件') ? 'inline-block' : 'none';
+            btnComplete.style.display = (status === '已收件') ? 'inline-block' : 'none';
+            btnReturn.style.display = (status === '待收件' || status === '已收件') ? 'inline-block' : 'none';
+        }
+
+        function searchOrders() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            const filtered = services.filter(s =>
+                s.so.toLowerCase().includes(keyword) ||
+                s.kd.toLowerCase().includes(keyword) ||
+                s.name.toLowerCase().includes(keyword)
+            );
+            renderOrders(filtered);
+        }
+
+        function filterByStatus() {
+            const status = document.getElementById('statusFilter').value;
+            if (status === '全部') renderOrders();
+            else renderOrders(services.filter(s => s.status === status));
+        }
+
+        renderOrders();
+    </script>
+</body>
+
+</html>

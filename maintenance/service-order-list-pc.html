@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>服务单管理</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .main h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .search-container button {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2196F3;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #1976D2;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f4f6f8;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            margin: 0 2px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-receipt {
+            background-color: #4CAF50;
+        }
+
+        .btn-receipt:hover {
+            background-color: #45A049;
+        }
+
+        .btn-complete {
+            background-color: #2196F3;
+        }
+
+        .btn-complete:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-reject {
+            background-color: #f44336;
+        }
+
+        .btn-reject:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-detail {
+            background-color: #FFC107;
+            color: #333;
+        }
+
+        .btn-detail:hover {
+            background-color: #FFB300;
+        }
+
+        .details {
+            display: none;
+            background-color: #f9f9f9;
+        }
+
+        .details td {
+            padding: 15px 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 30px;
+        }
+
+        .details-grid div {
+            margin-bottom: 6px;
+        }
+
+        .details-grid strong {
+            display: inline-block;
+            width: 120px;
+        }
+
+        .details-actions {
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-buttons {
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            margin: 0 8px;
+            padding: 6px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-ok {
+            background-color: #2196F3;
+            color: #fff;
+        }
+
+        .btn-cancel2 {
+            background-color: #ccc;
+        }
+
+        textarea {
+            width: 80%;
+            height: 60px;
+            margin-top: 10px;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div style="display:flex; align-items:center;"><span>维修师傅管理后台</span></div>
+        <nav><span>👤 维修师傅</span> <a href="index-pc.html">返回首页</a></nav>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a href="service-order-list.html">📝 管理服务单</a>
+            <a href="appointment-list.html">📅 管理预约</a>
+        </div>
+
+        <div class="main">
+            <h2>服务单管理</h2>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="搜索服务单号/快递单号/顾客姓名">
+                <button onclick="searchTable()">搜索</button>
+                <select id="statusFilter" onchange="filterByStatus()">
+                    <option value="全部">全部状态</option>
+                    <option value="待收件">待收件</option>
+                    <option value="已收件">已收件</option>
+                    <option value="已完成">已完成</option>
+                    <option value="已退回">已退回</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>服务单号</th>
+                        <th>快递单号</th>
+                        <th>顾客姓名</th>
+                        <th>联系电话</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="serviceTableBody">
+
+                    <!-- 示例数据 -->
+                    <script>
+                        const services = [
+                            {
+                                so: 'SO1001', kd: 'KD20251024001', name: '张三', phone: '13800001111', status: '待收件',
+                                details: {
+                                    serviceName: '上门维修', product: '电视机', merchant: '某家电公司', area: '北京市朝阳区',
+                                    serviceStatus: '待收件', content: '电视机维修', address: '北京市朝阳区某小区',
+                                    aftersale: '无', orderInfo: '订单编号12345'
+                                }
+                            },
+                            {
+                                so: 'SO1002', kd: 'KD20251024002', name: '李四', phone: '13800002222', status: '已收件',
+                                details: {
+                                    serviceName: '家电维修', product: '洗衣机', merchant: '某家电公司', area: '上海市浦东新区',
+                                    serviceStatus: '已收件', content: '洗衣机维修', address: '上海市浦东新区小区',
+                                    aftersale: '无', orderInfo: '订单编号12346'
+                                }
+                            },
+                            {
+                                so: 'SO1003', kd: 'KD20251024003', name: '王五', phone: '13800003333', status: '待收件',
+                                details: {
+                                    serviceName: '家电清洗', product: '空调', merchant: '家电连锁', area: '广州市天河区',
+                                    serviceStatus: '待收件', content: '空调清洗保养', address: '广州市天河区某小区',
+                                    aftersale: '无', orderInfo: '订单编号12347'
+                                }
+                            },
+                            {
+                                so: 'SO1004', kd: 'KD20251024004', name: '赵六', phone: '13800004444', status: '已完成',
+                                details: {
+                                    serviceName: '电脑维修', product: '笔记本', merchant: '电脑专修店', area: '深圳市福田区',
+                                    serviceStatus: '已完成', content: '笔记本更换硬盘', address: '深圳市福田区小区',
+                                    aftersale: '无', orderInfo: '订单编号12348'
+                                }
+                            },
+                            {
+                                so: 'SO1005', kd: 'KD20251024005', name: '钱七', phone: '13800005555', status: '待收件',
+                                details: {
+                                    serviceName: '冰箱维修', product: '冰箱', merchant: '某家电公司', area: '南京市鼓楼区',
+                                    serviceStatus: '待收件', content: '冰箱压缩机更换', address: '南京市鼓楼区小区',
+                                    aftersale: '无', orderInfo: '订单编号12349'
+                                }
+                            },
+                            {
+                                so: 'SO1006', kd: 'KD20251024006', name: '孙八', phone: '13800006666', status: '已收件',
+                                details: {
+                                    serviceName: '洗衣机清洗', product: '洗衣机', merchant: '家电连锁', area: '杭州市西湖区',
+                                    serviceStatus: '已收件', content: '洗衣机内部清洗', address: '杭州市西湖区小区',
+                                    aftersale: '无', orderInfo: '订单编号12350'
+                                }
+                            }
+                        ];
+
+                        const tbody = document.getElementById('serviceTableBody');
+                        services.forEach(s => {
+                            // 主行
+                            let tr = document.createElement('tr');
+                            tr.innerHTML = `<td>${s.so}</td><td>${s.kd}</td><td>${s.name}</td><td>${s.phone}</td>
+                    <td class="status">${s.status}</td><td><button class="btn btn-detail" onclick="toggleDetails(this)">显示详细信息</button></td>`;
+                            tbody.appendChild(tr);
+                            // 详细信息行
+                            let trd = document.createElement('tr');
+                            trd.className = 'details';
+                            trd.innerHTML = `<td colspan="6">
+                        <div class="details-grid">
+                            <div><strong>服务单号:</strong>${s.so}</div>
+                            <div><strong>服务名称:</strong>${s.details.serviceName}</div>
+                            <div><strong>产品:</strong>${s.details.product}</div>
+                            <div><strong>商户:</strong>${s.details.merchant}</div>
+                            <div><strong>服务地区:</strong>${s.details.area}</div>
+                            <div><strong>服务单状态:</strong><span class="detail-status">${s.details.serviceStatus}</span></div>
+                            <div><strong>服务内容:</strong>${s.details.content}</div>
+                            <div><strong>顾客姓名:</strong>${s.name}</div>
+                            <div><strong>联系电话:</strong>${s.phone}</div>
+                            <div><strong>顾客地址:</strong>${s.details.address}</div>
+                            <div><strong>售后单信息:</strong>${s.details.aftersale}</div>
+                            <div><strong>订单信息:</strong>${s.details.orderInfo}</div>
+                            <div><strong>快递单号:</strong>${s.kd}</div>
+                        </div>
+                        <div class="details-actions">
+                            ${s.status === '待收件' ? '<button class="btn btn-receipt" onclick="openReasonModal(this,\'已收件\',\'确认收件\')">确认收件</button><button class="btn btn-reject" onclick="openReasonModal(this,\'已退回\',\'拒绝收件\')">拒绝收件</button>' : ''}
+                            ${s.status === '已收件' ? '<button class="btn btn-complete" onclick="openReasonModal(this,\'已完成\',\'确认完成\')">确认完成</button><button class="btn btn-reject" onclick="openReasonModal(this,\'已退回\',\'退回\')">退回</button>' : ''}
+                        </div>
+                    </td>`;
+                            tbody.appendChild(trd);
+                        });
+                    </script>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="reasonModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalMessage">请输入操作理由：</h3>
+            <textarea id="reasonInput"></textarea>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="submitReason">提交</button>
+                <button class="btn-cancel2" onclick="closeModal('reasonModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <h3>上传照片或拍照完成服务</h3>
+            <div style="margin:10px 0;">
+                <button class="btn btn-complete" style="margin-right:10px;">选择文件</button>
+                <button class="btn btn-complete">拍照</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-ok" id="submitPhoto">确认完成</button>
+                <button class="btn-cancel2" onclick="closeModal('photoModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    let currentRow = null;
+    let actionStatus = '';
+    let actionName = '';
+
+    function toggleDetails(btn) {
+        const tr = btn.closest('tr').nextElementSibling;
+        tr.style.display = tr.style.display === 'table-row' ? 'none' : 'table-row';
+    }
+
+    function openReasonModal(btn, newStatus, name) {
+        currentRow = btn.closest('.details');
+        actionStatus = newStatus;
+        actionName = name;
+
+        if (name === '确认收件') {
+            // 直接确认
+            confirmAction();
+        } else if (name === '确认完成') {
+            // 弹出上传照片/拍照弹窗
+            document.getElementById('photoModal').style.display = 'flex';
+        } else {
+            // 拒绝收件/退回 弹出理由框
+            document.getElementById('reasonInput').value = '';
+            document.getElementById('reasonModal').style.display = 'flex';
+        }
+    }
+
+    // 提交理由按钮
+    document.getElementById('submitReason').onclick = function () {
+        const reason = document.getElementById('reasonInput').value.trim();
+        if (!reason) { alert('请输入理由'); return; }
+        confirmAction(reason);
+    };
+
+    // 上传照片弹窗确认按钮
+    document.getElementById('submitPhoto').onclick = function () {
+        confirmAction();
+        closeModal('photoModal');
+        alert('确认完成成功！（已上传照片/拍照）');
+    };
+
+    function confirmAction(reason = '') {
+        const statusSpan = currentRow.querySelector('.detail-status');
+        statusSpan.textContent = actionStatus;
+
+        const mainRow = currentRow.previousElementSibling;
+        mainRow.querySelector('.status').textContent = actionStatus;
+
+        if (reason) {
+            closeModal('reasonModal');
+            alert(`${actionName}成功！理由：${reason}`);
+        } else if (actionName !== '确认完成') {
+            alert(`${actionName}成功！`);
+        }
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function searchTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const trs = document.querySelectorAll('#serviceTableBody tr');
+        const statusFilter = document.getElementById('statusFilter').value;
+        for (let i = 0; i < trs.length; i++) {
+            const tr = trs[i];
+            if (tr.classList.contains('details')) continue;
+            const tds = tr.getElementsByTagName('td');
+            const matchesSearch = tds[0].textContent.toLowerCase().includes(input) ||
+                tds[1].textContent.toLowerCase().includes(input) ||
+                tds[2].textContent.toLowerCase().includes(input);
+            const matchesStatus = statusFilter === '全部' || tds[4].textContent === statusFilter;
+            tr.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+            const detailsRow = tr.nextElementSibling;
+            if (detailsRow && detailsRow.classList.contains('details')) detailsRow.style.display = 'none';
+        }
+    }
+
+    function filterByStatus() { searchTable(); }
+</script>
+
+</body>
+
+</html>
